@@ -207,7 +207,8 @@ CREATE TABLE employee_salary_structures (
     effective_from DATE NOT NULL,
     effective_to DATE,
     version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE INDEX idx_salary_structures_emp ON employee_salary_structures(employee_id, effective_from, effective_to);
 CREATE INDEX idx_salary_structures_company ON employee_salary_structures(company_id);
@@ -369,7 +370,8 @@ CREATE TABLE previous_employer_income (
     form_12b_document_url VARCHAR(500),
     is_verified BOOLEAN DEFAULT FALSE NOT NULL,
     version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- -----------------------------------------------------------------------------

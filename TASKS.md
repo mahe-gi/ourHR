@@ -23,12 +23,12 @@ Unified Task Board covering Backend Sprints 1 through 7 across Agents 0 through 
 - [x] `TASK-B206` (agent-5): Verify database seed data and write tests for effective-date rule resolution.
 
 ## Backend Sprint 3: Employee Master, Onboarding & KYC Vault
-- [ ] `TASK-B301` (agent-0): Define Employee Master, KYC Vault, and Form 12B REST DTO schemas.
-- [ ] `TASK-B302` (agent-1): Create JPA entities for `Employee`, `EmployeeKycVault`, and `PreviousEmployerIncome`.
-- [ ] `TASK-B303` (agent-2): Implement self-service onboarding magic link generation and submission.
-- [ ] `TASK-B304` (agent-2): Implement 50% Basic wage rule validator on salary offers.
-- [ ] `TASK-B305` (agent-4): Implement `FileStorageService` S3/MinIO adapter for KYC documents with masked ID storage.
-- [ ] `TASK-B306` (agent-5): Write unit tests for 50% Basic wage validator and Aadhaar masking enforcement.
+- [x] `TASK-B301` (agent-0): Define Employee Master, KYC Vault, and Form 12B REST DTO schemas.
+- [x] `TASK-B302` (agent-1): Create JPA entities for `Employee`, `EmployeeKycVault`, and `PreviousEmployerIncome`.
+- [x] `TASK-B303` (agent-2): Implement self-service onboarding magic link generation and submission.
+- [x] `TASK-B304` (agent-2): Implement 50% Basic wage rule validator on salary offers.
+- [x] `TASK-B305` (agent-4): Implement `FileStorageService` S3/MinIO adapter for KYC documents with masked ID storage.
+- [x] `TASK-B306` (agent-5): Write unit tests for 50% Basic wage validator and Aadhaar masking enforcement.
 
 ## Backend Sprint 4: Shifts, Attendance & Leave Ledger Engine
 - [ ] `TASK-B401` (agent-0): Define Attendance punch and Leave application DTO contracts.

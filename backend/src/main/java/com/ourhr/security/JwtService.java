@@ -44,6 +44,20 @@ public class JwtService {
         return buildToken(extraClaims, email, refreshExpirationMs);
     }
 
+    public String generateOnboardingToken(UUID employeeId, UUID companyId, long expirationMs) {
+        Map<String, Object> extraClaims = Map.of(
+                "employeeId", employeeId.toString(),
+                "companyId", companyId.toString(),
+                "type", "ONBOARDING"
+        );
+        return buildToken(extraClaims, employeeId.toString(), expirationMs);
+    }
+
+    public UUID extractEmployeeId(String token) {
+        String empIdStr = extractClaim(token, claims -> claims.get("employeeId", String.class));
+        return empIdStr != null ? UUID.fromString(empIdStr) : null;
+    }
+
     private String buildToken(Map<String, Object> extraClaims, String subject, long expiration) {
         return Jwts.builder()
                 .claims(extraClaims)
