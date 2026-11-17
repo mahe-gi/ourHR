@@ -40,13 +40,13 @@ Unified Task Board covering Backend Sprints 1 through 7 across Agents 0 through 
 - [x] `TASK-B407` (agent-5): Write integration tests for Sandwich rule leave calculation and attendance locking.
 
 ## Backend Sprint 5: CTC Builder, Arrears & 6-Step Payroll Engine
-- [ ] `TASK-B501` (agent-0): Define 6-step payroll state machine and audit diff DTO schemas.
-- [ ] `TASK-B502` (agent-1): Create JPA entities for `SalaryComponent`, `EmployeeSalaryStructure`, `LopReversal`, `PayrollRun`, `PayslipLineItem`.
-- [ ] `TASK-B503` (agent-3): Implement 6-step payroll runner service with state transitions (`DRAFT` to `DISBURSED`).
-- [ ] `TASK-B504` (agent-3): Implement draft recalculation logic (purging draft line items before approval).
-- [ ] `TASK-B505` (agent-3): Implement LOP reversal processor and backdated salary revision arrears calculator.
-- [ ] `TASK-B506` (agent-3): Implement Section 194J/194C consultant and intern payout runner.
-- [ ] `TASK-B507` (agent-5): Write integration tests verifying immutable payslip trigger on `DISBURSED` runs.
+- [x] `TASK-B501` (agent-0): Define 6-step payroll state machine and audit diff DTO schemas.
+- [x] `TASK-B502` (agent-1): Create JPA entities for `SalaryComponent`, `EmployeeSalaryStructure`, `LopReversal`, `PayrollRun`, `PayslipLineItem`.
+- [x] `TASK-B503` (agent-3): Implement 6-step payroll runner service with state transitions (`DRAFT` to `DISBURSED`).
+- [x] `TASK-B504` (agent-3): Implement draft recalculation logic (purging draft line items before approval).
+- [x] `TASK-B505` (agent-3): Implement LOP reversal processor and backdated salary revision arrears calculator.
+- [x] `TASK-B506` (agent-3): Implement Section 194J/194C consultant and intern payout runner.
+- [x] `TASK-B507` (agent-5): Write integration tests verifying immutable payslip trigger on `DISBURSED` runs.
 
 ## Backend Sprint 6: Indian Statutory Calculation Engine
 - [ ] `TASK-B601` (agent-0): Define statutory calculation inputs/outputs and edge case specifications.

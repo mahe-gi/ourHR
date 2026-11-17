@@ -42,3 +42,11 @@
 - Step 3 (agent-2): Implemented ShiftService, ShiftController, AttendanceService (WEB and MOBILE_GPS punch, BIOMETRIC_CSV batch ingestion), LeaveLedgerService (immutable ledger model, SQL SUM balance, and Indian Sandwich rule calculation), and AttendanceFreezeService (monthly attendance lock, payable days, LOP days).
 - Step 4 (agent-5): Implemented 95 unit and MockMvc integration tests across 8 test suites validating the Indian Sandwich rule, immutable ledger transactions, CSV biometric upload, attendance freeze locking, and 5-Persona RBAC matrix.
 - Verification: 272/272 tests passed (100% green). Zero emojis verified via scripts/validate-docs.sh and regex scan.
+
+## 2026-11-17 - Backend Sprint 5 Completed
+- Executed Backend Sprint 5 (CTC Builder, Arrears & 6-Step Payroll Engine) across 6 specialized agents.
+- Step 1 (agent-0): Defined 6-step payroll state machine, audit diff, LOP reversal, and consultant payout DTO schemas; authored specs/backend-sprint-5-payroll-engine-spec.md.
+- Step 2 (agent-1): Created JPA entities SalaryComponent, LopReversal, PayrollRun, PayslipLineItem with @TenantId and @Version; aligned V1 schema.
+- Step 3 (agent-3): Implemented PayrollRunnerService (6-step state machine from DRAFT to DISBURSED), draft recalculation purge-and-replace, LopReversalService (daily wage prorated math), and ConsultantPayoutService (Section 194J/194C TDS calculation).
+- Step 4 (agent-5): Implemented 93 unit and MockMvc integration tests across ImmutablePayrollDisbursalTest and service suites verifying the Immutable Payroll Law, draft recalculation clean replacement, state transition integrity, and full 48-check 5-Persona RBAC matrix.
+- Verification: 365/365 tests passed (100% green). Zero emojis verified via scripts/validate-docs.sh and regex scan.

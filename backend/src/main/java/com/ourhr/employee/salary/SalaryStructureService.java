@@ -72,4 +72,17 @@ public class SalaryStructureService {
         return salaryStructureRepository.findActiveStructure(tenantId, employeeId, LocalDate.now())
                 .orElseThrow(() -> new ResourceNotFoundException("Active salary structure not found for employee: " + employeeId));
     }
+
+    @Transactional(readOnly = true)
+    public java.util.Optional<EmployeeSalaryStructure> findActiveStructure(UUID employeeId, LocalDate onDate) {
+        UUID tenantId = TenantContext.getTenantId();
+        if (tenantId == null || employeeId == null) {
+            return java.util.Optional.empty();
+        }
+        return salaryStructureRepository.findActiveStructure(
+                tenantId,
+                employeeId,
+                onDate != null ? onDate : LocalDate.now()
+        );
+    }
 }

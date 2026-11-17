@@ -189,7 +189,9 @@ CREATE TABLE salary_components (
     component_type VARCHAR(20) NOT NULL, -- 'EARNING', 'DEDUCTION', 'EMPLOYER_CONTRIBUTION'
     is_statutory_wage BOOLEAN DEFAULT FALSE NOT NULL,
     is_taxable BOOLEAN DEFAULT TRUE NOT NULL,
+    version BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT uk_component_company UNIQUE (company_id, component_code)
 );
 
@@ -445,6 +447,7 @@ CREATE TABLE payroll_runs (
     approved_at TIMESTAMP WITH TIME ZONE,
     version BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT uk_payroll_period UNIQUE (company_id, payroll_month, payroll_year)
 );
 CREATE INDEX idx_payroll_runs_company ON payroll_runs(company_id);
@@ -458,7 +461,9 @@ CREATE TABLE payslip_line_items (
     item_name VARCHAR(100) NOT NULL,
     item_amount NUMERIC(12, 2) NOT NULL,
     payslip_pdf_url VARCHAR(500),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    version BIGINT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE INDEX idx_payslip_items_lookup ON payslip_line_items(payroll_run_id, employee_id);
 CREATE INDEX idx_payslip_items_company ON payslip_line_items(company_id);
