@@ -9,5 +9,8 @@ public enum DocCategory {
     KYC_CHEQUE,
     APPOINTMENT_LETTER,
     FORM_12B,
-    GENERAL
+    GENERAL,
+    PAYSLIP,
+    ECR,
+    BANK_PAYOUT
 }

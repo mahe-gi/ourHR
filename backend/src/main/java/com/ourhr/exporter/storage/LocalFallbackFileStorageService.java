@@ -27,7 +27,7 @@ public class LocalFallbackFileStorageService implements FileStorageService {
     private static final Logger log = LoggerFactory.getLogger(LocalFallbackFileStorageService.class);
 
     public static final long MAX_FILE_SIZE_BYTES = 5L * 1024L * 1024L; // 5 MB
-    public static final Set<String> ALLOWED_EXTENSIONS = Set.of(".pdf", ".jpg", ".jpeg", ".png");
+    public static final Set<String> ALLOWED_EXTENSIONS = Set.of(".pdf", ".jpg", ".jpeg", ".png", ".txt", ".csv");
 
     private static final Pattern AADHAAR_PATTERN = Pattern.compile("\\b\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}\\b|\\b\\d{12}\\b");
     private static final Pattern PAN_PATTERN = Pattern.compile("\\b[A-Za-z]{5}[0-9]{4}[A-Za-z]\\b");
@@ -141,12 +141,16 @@ public class LocalFallbackFileStorageService implements FileStorageService {
                     ext = ".jpg";
                 } else if (normalizedType.contains("png")) {
                     ext = ".png";
+                } else if (normalizedType.contains("text/plain") || normalizedType.contains("txt")) {
+                    ext = ".txt";
+                } else if (normalizedType.contains("csv")) {
+                    ext = ".csv";
                 }
             }
         }
 
         if (ext == null || !ALLOWED_EXTENSIONS.contains(ext)) {
-            throw new IllegalArgumentException("Unsupported file type. Allowed extensions: .pdf, .jpg, .jpeg, .png");
+            throw new IllegalArgumentException("Unsupported file type. Allowed extensions: .pdf, .jpg, .jpeg, .png, .txt, .csv");
         }
         return ext;
     }

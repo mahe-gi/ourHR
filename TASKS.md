@@ -58,9 +58,9 @@ Unified Task Board covering Backend Sprints 1 through 7 across Agents 0 through 
 - [x] `TASK-B607` (agent-5): Write exhaustive unit tests for all 7 Indian payroll edge cases.
 
 ## Backend Sprint 7: Exporters, PDF Engine & External CA API
-- [ ] `TASK-B701` (agent-0): Define OpenAPI / Swagger UI specifications for CA endpoints and file downloads.
-- [ ] `TASK-B702` (agent-4): Implement EPFO ECR .txt exporter (25-column `#~#` official government format).
-- [ ] `TASK-B703` (agent-4): Implement Bank NEFT/RTGS CSV exporters (HDFC, ICICI, SBI, Axis).
-- [ ] `TASK-B704` (agent-4): Implement asynchronous PDF payslip rendering service backed by `batch_jobs`.
-- [ ] `TASK-B705` (agent-4): Implement read-only External CA compliance endpoints (`ROLE_CA`).
-- [ ] `TASK-B706` (agent-5): Verify ECR .txt file syntax, test PDF generation, and run full test suite.
+- [x] `TASK-B701` (agent-0): Define OpenAPI / Swagger UI specifications for CA endpoints and file downloads.
+- [x] `TASK-B702` (agent-4): Implement EPFO ECR .txt exporter (25-column `#~#` official government format).
+- [x] `TASK-B703` (agent-4): Implement Bank NEFT/RTGS CSV exporters (HDFC, ICICI, SBI, Axis).
+- [x] `TASK-B704` (agent-4): Implement asynchronous PDF payslip rendering service backed by `batch_jobs`.
+- [x] `TASK-B705` (agent-4): Implement read-only External CA compliance endpoints (`ROLE_CA`).
+- [x] `TASK-B706` (agent-5): Verify ECR .txt file syntax, test PDF generation, and run full test suite.
