@@ -31,13 +31,13 @@ Unified Task Board covering Backend Sprints 1 through 7 across Agents 0 through 
 - [x] `TASK-B306` (agent-5): Write unit tests for 50% Basic wage validator and Aadhaar masking enforcement.
 
 ## Backend Sprint 4: Shifts, Attendance & Leave Ledger Engine
-- [ ] `TASK-B401` (agent-0): Define Attendance punch and Leave application DTO contracts.
-- [ ] `TASK-B402` (agent-1): Create JPA entities for `Shift`, `AttendanceLog`, `MonthlyAttendanceSummary`, `LeaveType`, `LeaveApplication`, `LeaveLedger`.
-- [ ] `TASK-B403` (agent-2): Implement Web and Mobile GPS punch recording API.
-- [ ] `TASK-B404` (agent-2): Implement bulk CSV/Excel attendance upload (`BIOMETRIC_CSV`).
-- [ ] `TASK-B405` (agent-2): Implement immutable `LeaveLedgerService` (credit/debit transaction model and Sandwich rule).
-- [ ] `TASK-B406` (agent-2): Implement Monthly Attendance Freeze job with payable days and LOP calculation.
-- [ ] `TASK-B407` (agent-5): Write integration tests for Sandwich rule leave calculation and attendance locking.
+- [x] `TASK-B401` (agent-0): Define Attendance punch and Leave application DTO contracts.
+- [x] `TASK-B402` (agent-1): Create JPA entities for `Shift`, `AttendanceLog`, `MonthlyAttendanceSummary`, `LeaveType`, `LeaveApplication`, `LeaveLedger`.
+- [x] `TASK-B403` (agent-2): Implement Web and Mobile GPS punch recording API.
+- [x] `TASK-B404` (agent-2): Implement bulk CSV/Excel attendance upload (`BIOMETRIC_CSV`).
+- [x] `TASK-B405` (agent-2): Implement immutable `LeaveLedgerService` (credit/debit transaction model and Sandwich rule).
+- [x] `TASK-B406` (agent-2): Implement Monthly Attendance Freeze job with payable days and LOP calculation.
+- [x] `TASK-B407` (agent-5): Write integration tests for Sandwich rule leave calculation and attendance locking.
 
 ## Backend Sprint 5: CTC Builder, Arrears & 6-Step Payroll Engine
 - [ ] `TASK-B501` (agent-0): Define 6-step payroll state machine and audit diff DTO schemas.

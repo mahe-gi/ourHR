@@ -34,3 +34,11 @@
   * Agent 4 implemented S3StorageProperties, FileStorageService interface, LocalFallbackFileStorageService (sanitizing raw Aadhaar numbers from file keys, path traversal protection, 5MB limit), S3FileStorageService, and StorageController.
 - Step 4 (agent-5): Implemented 99 unit and MockMvc integration tests across 13 test suites validating the 50% wage rule, Sensitive ID Redaction Law, Form 12B arithmetic, Onboarding magic links, file storage safety, and 5-Persona RBAC matrix.
 - Verification: 177/177 tests passed (100% green). Zero emojis verified via scripts/validate-docs.sh and regex scan.
+
+## 2026-11-17 - Backend Sprint 4 Completed
+- Executed Backend Sprint 4 (Shifts, Attendance & Leave Ledger Engine) across 6 specialized agents.
+- Step 1 (agent-0): Defined Attendance punch, Shift, and Leave DTO schemas; authored specs/backend-sprint-4-shifts-attendance-leave-spec.md.
+- Step 2 (agent-1): Created JPA entities Shift, HolidayCalendar, AttendanceLog, MonthlyAttendanceSummary, LeaveType, LeaveApplication, LeaveLedger inheriting BaseTenantEntity with @TenantId and @Version; aligned V1 schema with version and updated_at columns.
+- Step 3 (agent-2): Implemented ShiftService, ShiftController, AttendanceService (WEB and MOBILE_GPS punch, BIOMETRIC_CSV batch ingestion), LeaveLedgerService (immutable ledger model, SQL SUM balance, and Indian Sandwich rule calculation), and AttendanceFreezeService (monthly attendance lock, payable days, LOP days).
+- Step 4 (agent-5): Implemented 95 unit and MockMvc integration tests across 8 test suites validating the Indian Sandwich rule, immutable ledger transactions, CSV biometric upload, attendance freeze locking, and 5-Persona RBAC matrix.
+- Verification: 272/272 tests passed (100% green). Zero emojis verified via scripts/validate-docs.sh and regex scan.

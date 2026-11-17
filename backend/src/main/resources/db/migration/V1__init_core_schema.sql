@@ -228,8 +228,10 @@ CREATE TABLE shifts (
     late_mark_penalty_count INT DEFAULT 3 NOT NULL,
     late_mark_penalty_deduction_days NUMERIC(3, 1) DEFAULT 0.5 NOT NULL,
     version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+CREATE INDEX idx_shifts_company ON shifts(company_id);
 
 CREATE TABLE holiday_calendars (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -238,9 +240,12 @@ CREATE TABLE holiday_calendars (
     holiday_name VARCHAR(150) NOT NULL,
     holiday_date DATE NOT NULL,
     is_restricted BOOLEAN DEFAULT FALSE NOT NULL,
+    version BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT uk_holiday UNIQUE (company_id, state_code, holiday_date)
 );
+CREATE INDEX idx_holiday_calendars_company ON holiday_calendars(company_id);
 
 CREATE TABLE attendance_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -254,7 +259,9 @@ CREATE TABLE attendance_logs (
     longitude NUMERIC(11, 8),
     selfie_image_url VARCHAR(500),
     is_regularized BOOLEAN DEFAULT FALSE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    version BIGINT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE INDEX idx_attendance_logs_emp ON attendance_logs(employee_id, punch_timestamp);
 CREATE INDEX idx_attendance_logs_company ON attendance_logs(company_id);
@@ -273,6 +280,7 @@ CREATE TABLE monthly_attendance_summary (
     locked_at TIMESTAMP WITH TIME ZONE,
     version BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT uk_monthly_attendance UNIQUE (company_id, employee_id, payroll_month, payroll_year)
 );
 CREATE INDEX idx_monthly_attendance_lookup ON monthly_attendance_summary(company_id, payroll_month, payroll_year);
@@ -289,7 +297,8 @@ CREATE TABLE lop_reversals (
     processed_in_payroll_run_id UUID,
     approved_by UUID REFERENCES users(id),
     version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE INDEX idx_lop_reversals_company ON lop_reversals(company_id, status);
 
@@ -308,8 +317,10 @@ CREATE TABLE leave_types (
     is_sandwich_rule_enabled BOOLEAN DEFAULT FALSE NOT NULL,
     version BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT uk_leave_type UNIQUE (company_id, leave_code)
 );
+CREATE INDEX idx_leave_types_company ON leave_types(company_id);
 
 CREATE TABLE leave_applications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -324,8 +335,11 @@ CREATE TABLE leave_applications (
     approver_id UUID REFERENCES employees(id),
     actioned_at TIMESTAMP WITH TIME ZONE,
     version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+CREATE INDEX idx_leave_applications_employee ON leave_applications(employee_id);
+CREATE INDEX idx_leave_applications_company ON leave_applications(company_id);
 
 CREATE TABLE leave_ledgers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -337,9 +351,12 @@ CREATE TABLE leave_ledgers (
     leave_application_id UUID REFERENCES leave_applications(id),
     reference_note VARCHAR(255),
     effective_date DATE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    version BIGINT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 CREATE INDEX idx_leave_ledgers_balance ON leave_ledgers(employee_id, leave_type_id);
+CREATE INDEX idx_leave_ledgers_company ON leave_ledgers(company_id);
 
 -- -----------------------------------------------------------------------------
 -- 8. TAX DECLARATIONS & FORM 12B (Mid-Year Joiner Support)
