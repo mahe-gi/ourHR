@@ -15,12 +15,12 @@ Unified Task Board covering Backend Sprints 1 through 7 across Agents 0 through 
 - [x] `TASK-B108` (agent-5): Write RBAC security tests verifying role enforcement.
 
 ## Backend Sprint 2: Company, Multi-State Branches & Statutory Database
-- [ ] `TASK-B201` (agent-0): Define DTO contracts for Company and Branch management.
-- [ ] `TASK-B202` (agent-1): Write `V2__seed_default_statutory_rules.sql` (2026 tax slabs, EPF/ESIC limits, state PT slabs).
-- [ ] `TASK-B203` (agent-1): Create JPA entities for `Company`, `Branch`, `StatutoryRule`, `PtSlab`, `LwfRule`, `TdsTaxSlab`.
-- [ ] `TASK-B204` (agent-2): Implement `CompanyService` and `BranchService` with state-specific lookups.
-- [ ] `TASK-B205` (agent-3): Implement `StatutoryRuleRepository` with effective-date range query methods.
-- [ ] `TASK-B206` (agent-5): Verify database seed data and write tests for effective-date rule resolution.
+- [x] `TASK-B201` (agent-0): Define DTO contracts for Company and Branch management.
+- [x] `TASK-B202` (agent-1): Write `V2__seed_default_statutory_rules.sql` (2026 tax slabs, EPF/ESIC limits, state PT slabs).
+- [x] `TASK-B203` (agent-1): Create JPA entities for `Company`, `Branch`, `StatutoryRule`, `PtSlab`, `LwfRule`, `TdsTaxSlab`.
+- [x] `TASK-B204` (agent-2): Implement `CompanyService` and `BranchService` with state-specific lookups.
+- [x] `TASK-B205` (agent-3): Implement `StatutoryRuleRepository` with effective-date range query methods.
+- [x] `TASK-B206` (agent-5): Verify database seed data and write tests for effective-date rule resolution.
 
 ## Backend Sprint 3: Employee Master, Onboarding & KYC Vault
 - [ ] `TASK-B301` (agent-0): Define Employee Master, KYC Vault, and Form 12B REST DTO schemas.

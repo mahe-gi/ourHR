@@ -13,4 +13,8 @@ public interface BranchRepository extends JpaRepository<Branch, UUID> {
     List<Branch> findByCompanyId(UUID companyId);
 
     Optional<Branch> findByCompanyIdAndIsHeadquartersTrue(UUID companyId);
+
+    Optional<Branch> findByIdAndCompanyId(UUID id, UUID companyId);
+
+    List<Branch> findByCompanyIdAndStateCode(UUID companyId, String stateCode);
 }
