@@ -49,13 +49,13 @@ Unified Task Board covering Backend Sprints 1 through 7 across Agents 0 through 
 - [x] `TASK-B507` (agent-5): Write integration tests verifying immutable payslip trigger on `DISBURSED` runs.
 
 ## Backend Sprint 6: Indian Statutory Calculation Engine
-- [ ] `TASK-B601` (agent-0): Define statutory calculation inputs/outputs and edge case specifications.
-- [ ] `TASK-B602` (agent-3): Implement `StatutoryCalculationStrategy` interface and factory.
-- [ ] `TASK-B603` (agent-3): Implement EPF/EPS calculator (ceilings, 8.33% EPS / 3.67% EPF split, EDLI, admin charges).
-- [ ] `TASK-B604` (agent-3): Implement ESIC calculator with 6-month contribution window continuation rule.
-- [ ] `TASK-B605` (agent-3): Implement state PT/LWF calculator (handling Maharashtra February INR 300 rule).
-- [ ] `TASK-B606` (agent-3): Implement Old vs. New Tax Regime TDS engine with Form 12B previous income aggregation.
-- [ ] `TASK-B607` (agent-5): Write exhaustive unit tests for all 7 Indian payroll edge cases.
+- [x] `TASK-B601` (agent-0): Define statutory calculation inputs/outputs and edge case specifications.
+- [x] `TASK-B602` (agent-3): Implement `StatutoryCalculationStrategy` interface and factory.
+- [x] `TASK-B603` (agent-3): Implement EPF/EPS calculator (ceilings, 8.33% EPS / 3.67% EPF split, EDLI, admin charges).
+- [x] `TASK-B604` (agent-3): Implement ESIC calculator with 6-month contribution window continuation rule.
+- [x] `TASK-B605` (agent-3): Implement state PT/LWF calculator (handling Maharashtra February INR 300 rule).
+- [x] `TASK-B606` (agent-3): Implement Old vs. New Tax Regime TDS engine with Form 12B previous income aggregation.
+- [x] `TASK-B607` (agent-5): Write exhaustive unit tests for all 7 Indian payroll edge cases.
 
 ## Backend Sprint 7: Exporters, PDF Engine & External CA API
 - [ ] `TASK-B701` (agent-0): Define OpenAPI / Swagger UI specifications for CA endpoints and file downloads.

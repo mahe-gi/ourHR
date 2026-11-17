@@ -50,3 +50,14 @@
 - Step 3 (agent-3): Implemented PayrollRunnerService (6-step state machine from DRAFT to DISBURSED), draft recalculation purge-and-replace, LopReversalService (daily wage prorated math), and ConsultantPayoutService (Section 194J/194C TDS calculation).
 - Step 4 (agent-5): Implemented 93 unit and MockMvc integration tests across ImmutablePayrollDisbursalTest and service suites verifying the Immutable Payroll Law, draft recalculation clean replacement, state transition integrity, and full 48-check 5-Persona RBAC matrix.
 - Verification: 365/365 tests passed (100% green). Zero emojis verified via scripts/validate-docs.sh and regex scan.
+
+## 2026-11-17 - Backend Sprint 6 Completed
+- Executed Backend Sprint 6 (Indian Statutory Calculation Engine) across 6 specialized agents.
+- Step 1 (agent-0): Defined StatutoryCalculationRequest, StatutoryCalculationResult, and component DTOs; authored specs/backend-sprint-6-statutory-engine-spec.md.
+- Step 2 (agent-1): Seed tables (statutory_rules, pt_slabs, lwf_rules, tds_tax_slabs) verified.
+- Step 3 (agent-3): Implemented StatutoryCalculationStrategy, StatutoryStrategyFactory, EpfCalculatorStrategy, EsicCalculatorStrategy, PtCalculatorStrategy, LwfCalculatorStrategy, TdsProjectorStrategy, IndianStatutoryEngineService, and StatutoryCalculationController.
+- Step 4 (agent-5 & agent-3 relay):
+  * Agent 5 executed gate check and detected defect DEFECT-B607-01 (EPS statutory ceiling rounding math).
+  * Adhering strictly to AGENTS.md, Agent 5 routed the defect to Agent 3 who applied the statutory ceiling cap fix in EpfCalculatorStrategy.
+  * Agent 5 re-verified with 21 new unit and integration tests covering the 7 statutory edge cases (EPF/EPS split, ESIC 6-month window continuation, Maharashtra February INR 300 PT, LWF seasonal deduction, Old vs New TDS projection with Form 12B, and RBAC matrix).
+- Verification: 386/386 tests passed (100% green). Zero emojis verified via scripts/validate-docs.sh and regex scan.
