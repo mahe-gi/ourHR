@@ -1,0 +1,19 @@
+name: ourHR Security Audit
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 1'
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check for Committed Secrets
+        run: |
+          echo "Scanning for credentials..."
+          ! grep -rn "BEGIN RSA PRIVATE KEY" . --exclude-dir=.git

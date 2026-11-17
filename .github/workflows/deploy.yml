@@ -1,0 +1,20 @@
+name: ourHR Deployment Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment target (staging or production)'
+        required: true
+        default: 'staging'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Echo Deployment Notice
+        run: |
+          echo "Deploying ourHR to ${{ github.event.inputs.environment }}..."
