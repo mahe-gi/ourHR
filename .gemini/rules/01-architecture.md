@@ -1,6 +1,16 @@
-# Antigravity Architecture Rule: System Boundaries
+# Antigravity Architecture Rule: Modular Monolith & Contracts
 
-1. Decoupled Surfaces: Backend (Spring Boot) and frontends (React Vite, React Native, Next.js) must remain fully decoupled.
-2. Contract-First Development: Endpoints must be documented and agreed in docs/05-api/ before client implementation.
-3. S3 Storage: Binary files, KYC documents, selfie punches, and payslips must never be stored in database columns. Use the S3 adapter.
-4. Immutability: Completed payroll runs, payslips, and leave ledger transactions are strictly append-only.
+1. Package Structure: All backend code must reside under `com.ourhr.*`:
+   - `com.ourhr.common`: Base entities, API envelopes, exceptions, tenant context.
+   - `com.ourhr.security`: JWT filter, authentication handlers, RBAC config.
+   - `com.ourhr.company`: Legal entity, multi-state branches, org hierarchy.
+   - `com.ourhr.employee`: Master records, KYC document vault, Form 12B.
+   - `com.ourhr.attendance`: Punches, shifts, regularization, monthly attendance freeze.
+   - `com.ourhr.leave`: Leave types, immutable leave ledger, sandwich rule.
+   - `com.ourhr.payroll`: Structures, 6-step runner, arrears, LOP reversals, Section 194J/C.
+   - `com.ourhr.statutory`: EPF, ESIC, state PT/LWF, Old vs. New TDS calculation strategies.
+   - `com.ourhr.exporter`: EPFO ECR .txt, Bank CSVs, PDF payslips, Form 24Q.
+   - `com.ourhr.jobs`: Persistent batch job queue execution.
+2. Inter-Module Coupling: Modules must communicate via public `@Service` interfaces or DTOs. Never inject another module's JPA Repository directly.
+3. Contract-First API: All public REST endpoints must be defined with OpenAPI 3 annotations (@Operation, @ApiResponse) and tested before publishing.
+4. Zero Emojis: Strictly forbidden in code, comments, documentation, and API messages.
