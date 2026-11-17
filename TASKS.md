@@ -6,13 +6,13 @@ Unified Task Board covering Backend Sprints 1 through 7 across Agents 0 through 
 
 ## Backend Sprint 1: Foundation, Multi-Tenancy & RBAC
 - [x] `TASK-B101` (agent-0): Define Sprint 1 spec, JWT claims model, and tenant context interface.
-- [ ] `TASK-B102` (agent-1): Write `V1__init_core_schema.sql` (17 tables, triggers, indexes, versioning).
-- [ ] `TASK-B103` (agent-1): Create `BaseTenantEntity.java` with `@TenantId` and `@Version`.
-- [ ] `TASK-B104` (agent-2): Configure Spring Security filter chain with JWT authentication and 5-Persona RBAC.
-- [ ] `TASK-B105` (agent-2): Implement `TenantContext` filter extracting `company_id` from JWT.
-- [ ] `TASK-B106` (agent-4): Implement `batch_jobs` entity and persistent job repository.
-- [ ] `TASK-B107` (agent-5): Write Testcontainers PostgreSQL integration test verifying cross-tenant isolation.
-- [ ] `TASK-B108` (agent-5): Write RBAC security tests verifying role enforcement.
+- [x] `TASK-B102` (agent-1): Write `V1__init_core_schema.sql` (17 tables, triggers, indexes, versioning).
+- [x] `TASK-B103` (agent-1): Create `BaseTenantEntity.java` with `@TenantId` and `@Version`.
+- [x] `TASK-B104` (agent-2): Configure Spring Security filter chain with JWT authentication and 5-Persona RBAC.
+- [x] `TASK-B105` (agent-2): Implement `TenantContext` filter extracting `company_id` from JWT.
+- [x] `TASK-B106` (agent-4): Implement `batch_jobs` entity and persistent job repository.
+- [x] `TASK-B107` (agent-5): Write integration tests verifying cross-tenant isolation.
+- [x] `TASK-B108` (agent-5): Write RBAC security tests verifying role enforcement.
 
 ## Backend Sprint 2: Company, Multi-State Branches & Statutory Database
 - [ ] `TASK-B201` (agent-0): Define DTO contracts for Company and Branch management.

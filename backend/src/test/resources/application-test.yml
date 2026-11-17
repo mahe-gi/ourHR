@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:ourhr_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+
+ourhr:
+  security:
+    jwt:
+      secret: dGhpc2lzYXZlcnlsb25nYW5kc2VjdXJlMjU2Yml0c2VjcmV0a2V5Zm9yb3VyaHJhcHAxMjM0NTY3ODkwMTI=
+      expiration-ms: 3600000
+      refresh-expiration-ms: 86400000
+  storage:
+    s3:
+      endpoint: http://localhost:9000
+      region: us-east-1
+      bucket: test-bucket
+      access-key: test
+      secret-key: test

@@ -481,6 +481,7 @@ CREATE TABLE batch_jobs (
     job_payload JSONB,
     error_summary TEXT,
     initiated_by UUID NOT NULL REFERENCES users(id),
+    version BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
