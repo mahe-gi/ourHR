@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 90" width="380" height="90" fill="none">
+  <defs>
+    <linearGradient id="darkLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+    <linearGradient id="darkStatGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+    <filter id="darkGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Emblem Icon on Left -->
+  <g transform="translate(8, 9)">
+    <rect width="72" height="72" rx="18" fill="#1E293B" />
+    <rect width="72" height="72" rx="18" stroke="url(#darkLogoGrad)" stroke-width="1.2" stroke-opacity="0.6" />
+    <circle cx="36" cy="36" r="24" stroke="url(#darkLogoGrad)" stroke-width="3" stroke-dasharray="100 50" stroke-linecap="round" transform="rotate(-45 36 36)" />
+    <path d="M 26 23 V 49" stroke="#F8FAFC" stroke-width="4.5" stroke-linecap="round" />
+    <path d="M 46 23 V 49" stroke="#F8FAFC" stroke-width="4.5" stroke-linecap="round" />
+    <path d="M 26 36 H 46" stroke="url(#darkStatGrad)" stroke-width="4.5" stroke-linecap="round" />
+    <path d="M 36 23 C 43 23 46 29 46 35" stroke="url(#darkStatGrad)" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.9" />
+    <circle cx="36" cy="36" r="3" fill="#34D399" filter="url(#darkGlow)" />
+  </g>
+
+  <!-- Wordmark 'ourHR' -->
+  <g transform="translate(96, 52)">
+    <!-- 'our' -->
+    <text font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" font-size="38" font-weight="400" fill="#F8FAFC" letter-spacing="-1.2">our</text>
+    <!-- 'HR' -->
+    <text x="62" font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" font-size="38" font-weight="800" fill="url(#darkLogoGrad)" letter-spacing="-0.5">HR</text>
+  </g>
+
+  <!-- Subtitle Tagline -->
+  <g transform="translate(98, 68)">
+    <text font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" font-size="9" font-weight="700" fill="#94A3B8" letter-spacing="2.8">STATUTORY PAYROLL &amp; HRMS</text>
+  </g>
+
+  <!-- Status / Security Capsule Pill -->
+  <g transform="translate(262, 28)">
+    <rect width="98" height="20" rx="10" fill="rgba(16, 185, 129, 0.12)" stroke="#059669" stroke-width="1" />
+    <circle cx="272" cy="38" r="3" fill="#34D399" />
+    <text x="280" y="42" font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" font-size="8.5" font-weight="700" fill="#34D399" letter-spacing="0.5">INDIA MSME</text>
+  </g>
+</svg>
