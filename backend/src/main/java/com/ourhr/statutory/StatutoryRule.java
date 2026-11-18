@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -38,6 +40,7 @@ public class StatutoryRule {
     @Column(name = "rule_value", precision = 12, scale = 2, nullable = false)
     private BigDecimal ruleValue;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "rule_metadata", columnDefinition = "jsonb")
     private String ruleMetadata;
 

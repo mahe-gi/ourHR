@@ -12,7 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.TenantId;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -50,9 +52,11 @@ public class AuditLog {
     @Column(name = "entity_id", nullable = false, updatable = false)
     private UUID entityId;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "before_json", columnDefinition = "jsonb", updatable = false)
     private String beforeJson;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "after_json", columnDefinition = "jsonb", updatable = false)
     private String afterJson;
 

@@ -7,6 +7,7 @@ import com.ourhr.auth.dto.RegisterCompanyResponse;
 import com.ourhr.auth.dto.UserProfileResponse;
 import com.ourhr.common.AuditLog;
 import com.ourhr.common.AuditLogRepository;
+import com.ourhr.common.TenantContext;
 import com.ourhr.company.Branch;
 import com.ourhr.company.BranchRepository;
 import com.ourhr.company.Company;
@@ -57,57 +58,62 @@ public class AuthService {
                 .build();
         Company savedCompany = companyRepository.save(company);
 
-        Branch hqBranch = Branch.builder()
-                .branchName("Headquarters")
-                .stateCode(request.getStateCode().toUpperCase())
-                .city(request.getCity())
-                .addressLine(request.getAddressLine())
-                .pincode(request.getPincode())
-                .isHeadquarters(true)
-                .build();
-        hqBranch.setCompanyId(savedCompany.getId());
-        branchRepository.save(hqBranch);
+        TenantContext.setTenantId(savedCompany.getId());
+        try {
+            Branch hqBranch = Branch.builder()
+                    .branchName("Headquarters")
+                    .stateCode(request.getStateCode().toUpperCase())
+                    .city(request.getCity())
+                    .addressLine(request.getAddressLine())
+                    .pincode(request.getPincode())
+                    .isHeadquarters(true)
+                    .build();
+            hqBranch.setCompanyId(savedCompany.getId());
+            branchRepository.save(hqBranch);
 
-        User adminUser = User.builder()
-                .email(request.getAdminEmail().toLowerCase())
-                .passwordHash(passwordEncoder.encode(request.getAdminPassword()))
-                .fullName(request.getAdminFullName())
-                .phoneNumber(request.getAdminPhoneNumber())
-                .isActive(true)
-                .build();
-        adminUser.setCompanyId(savedCompany.getId());
+            User adminUser = User.builder()
+                    .email(request.getAdminEmail().toLowerCase())
+                    .passwordHash(passwordEncoder.encode(request.getAdminPassword()))
+                    .fullName(request.getAdminFullName())
+                    .phoneNumber(request.getAdminPhoneNumber())
+                    .isActive(true)
+                    .build();
+            adminUser.setCompanyId(savedCompany.getId());
 
-        UserRole founderRole = UserRole.builder()
-                .roleName(Role.ROLE_FOUNDER)
-                .build();
-        UserRole hrRole = UserRole.builder()
-                .roleName(Role.ROLE_HR)
-                .build();
+            UserRole founderRole = UserRole.builder()
+                    .roleName(Role.ROLE_FOUNDER)
+                    .build();
+            UserRole hrRole = UserRole.builder()
+                    .roleName(Role.ROLE_HR)
+                    .build();
 
-        adminUser.addRole(founderRole);
-        adminUser.addRole(hrRole);
+            adminUser.addRole(founderRole);
+            adminUser.addRole(hrRole);
 
-        User savedUser = userRepository.save(adminUser);
+            User savedUser = userRepository.save(adminUser);
 
-        AuditLog auditLog = AuditLog.builder()
-                .companyId(savedCompany.getId())
-                .actorId(savedUser.getId())
-                .role("ROLE_FOUNDER")
-                .action("COMPANY_REGISTERED")
-                .entityName("Company")
-                .entityId(savedCompany.getId())
-                .afterJson("{\"legalName\":\"" + savedCompany.getLegalName() + "\",\"pan\":\"" + savedCompany.getPanNumber() + "\"}")
-                .build();
-        auditLogRepository.save(auditLog);
+            AuditLog auditLog = AuditLog.builder()
+                    .companyId(savedCompany.getId())
+                    .actorId(savedUser.getId())
+                    .role("ROLE_FOUNDER")
+                    .action("COMPANY_REGISTERED")
+                    .entityName("Company")
+                    .entityId(savedCompany.getId())
+                    .afterJson("{\"legalName\":\"" + savedCompany.getLegalName() + "\",\"pan\":\"" + savedCompany.getPanNumber() + "\"}")
+                    .build();
+            auditLogRepository.save(auditLog);
 
-        return RegisterCompanyResponse.builder()
-                .companyId(savedCompany.getId())
-                .legalName(savedCompany.getLegalName())
-                .adminUserId(savedUser.getId())
-                .adminEmail(savedUser.getEmail())
-                .adminFullName(savedUser.getFullName())
-                .message("Company and administrator successfully registered")
-                .build();
+            return RegisterCompanyResponse.builder()
+                    .companyId(savedCompany.getId())
+                    .legalName(savedCompany.getLegalName())
+                    .adminUserId(savedUser.getId())
+                    .adminEmail(savedUser.getEmail())
+                    .adminFullName(savedUser.getFullName())
+                    .message("Company and administrator successfully registered")
+                    .build();
+        } finally {
+            TenantContext.clear();
+        }
     }
 
     @Transactional(readOnly = true)

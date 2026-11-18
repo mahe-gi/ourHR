@@ -10,6 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.util.UUID;
 
 @Getter
@@ -40,6 +43,7 @@ public class BatchJob extends BaseTenantEntity {
     @Column(name = "failed_items", nullable = false)
     private Integer failedItems = 0;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "job_payload", columnDefinition = "jsonb")
     private String jobPayload;
 
