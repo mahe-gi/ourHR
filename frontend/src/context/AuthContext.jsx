@@ -14,14 +14,21 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('vetan_token');
-      if (!token) {
+      if (!token || token === 'undefined' || token === 'null') {
+        localStorage.removeItem('vetan_token');
         setLoading(false);
         return;
       }
       try {
         const userData = await authApi.getMe();
-        setUser(userData);
-        if (userData.companyId) {
+        const normUser = {
+          ...userData,
+          id: userData.userId || userData.id,
+          roles: userData.roles || (userData.role ? [userData.role] : ['ROLE_FOUNDER']),
+          role: (userData.roles && userData.roles[0]) ? userData.roles[0] : (userData.role || 'ROLE_FOUNDER'),
+        };
+        setUser(normUser);
+        if (normUser.companyId) {
           try {
             const [companyData, branchList] = await Promise.all([
               companyApi.getCurrentCompany().catch(() => null),
@@ -52,18 +59,31 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const data = await authApi.login({ email, password });
-      localStorage.setItem('vetan_token', data.token);
-      setUser(data.user);
-      if (data.user?.companyId) {
-        const [companyData, branchList] = await Promise.all([
-          companyApi.getCurrentCompany().catch(() => null),
-          companyApi.getBranches().catch(() => []),
-        ]);
-        setCompany(companyData);
-        setBranches(branchList || []);
-        if (branchList && branchList.length > 0) {
-          const hq = branchList.find((b) => b.isHq) || branchList[0];
-          setCurrentBranch(hq);
+      const token = data.accessToken || data.token;
+      if (token) {
+        localStorage.setItem('vetan_token', token);
+      }
+      const normUser = {
+        ...data,
+        id: data.userId || data.id,
+        roles: data.roles || (data.role ? [data.role] : ['ROLE_FOUNDER']),
+        role: (data.roles && data.roles[0]) ? data.roles[0] : (data.role || 'ROLE_FOUNDER'),
+      };
+      setUser(normUser);
+      if (normUser.companyId) {
+        try {
+          const [companyData, branchList] = await Promise.all([
+            companyApi.getCurrentCompany().catch(() => null),
+            companyApi.getBranches().catch(() => []),
+          ]);
+          setCompany(companyData);
+          setBranches(branchList || []);
+          if (branchList && branchList.length > 0) {
+            const hq = branchList.find((b) => b.isHq) || branchList[0];
+            setCurrentBranch(hq);
+          }
+        } catch (e) {
+          // Non-blocking metadata load
         }
       }
       return data;
@@ -76,16 +96,26 @@ export function AuthProvider({ children }) {
   const registerCompany = async (payload) => {
     setError(null);
     try {
-      const data = await authApi.registerCompany(payload);
-      localStorage.setItem('vetan_token', data.token);
-      setUser(data.user);
-      setCompany(data.company);
-      const branchList = await companyApi.getBranches().catch(() => []);
-      setBranches(branchList);
-      if (branchList.length > 0) {
-        setCurrentBranch(branchList[0]);
-      }
-      return data;
+      const formattedPayload = {
+        legalName: payload.legalName || payload.companyName,
+        tradeName: payload.tradeName || payload.companyName,
+        panNumber: payload.panNumber || payload.pan,
+        tanNumber: payload.tanNumber || 'BLRV12345D',
+        gstin: payload.gstin || undefined,
+        signatoryName: payload.signatoryName || payload.adminFullName,
+        signatoryDesignation: payload.signatoryDesignation || 'Founder',
+        stateCode: payload.stateCode || 'KA',
+        city: payload.city || 'Bengaluru',
+        addressLine: payload.addressLine || 'Main Office Road',
+        pincode: payload.pincode || '560001',
+        adminEmail: payload.adminEmail,
+        adminPassword: payload.adminPassword,
+        adminFullName: payload.adminFullName,
+        adminPhoneNumber: payload.adminPhoneNumber || payload.phoneNumber || '9876543210',
+      };
+      await authApi.registerCompany(formattedPayload);
+      const loginData = await login(payload.adminEmail, payload.adminPassword);
+      return loginData;
     } catch (err) {
       setError(err.message || 'Company registration failed');
       throw err;
