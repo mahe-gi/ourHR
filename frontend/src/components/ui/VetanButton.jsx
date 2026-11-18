@@ -41,7 +41,7 @@ export default function VetanButton({
           }}
         />
       )}
-      <span style={{ opacity: loading ? 0 : 1 }}>{children}</span>
+      <span style={{ opacity: loading ? 0 : 1, pointerEvents: 'none' }}>{children}</span>
     </Button>
   );
 }

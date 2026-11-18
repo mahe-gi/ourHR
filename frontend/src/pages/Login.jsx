@@ -96,6 +96,9 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <VetanInput
+            id="login-email"
+            name="email"
+            autoComplete="username"
             label="Email Address"
             type="email"
             value={email}
@@ -104,6 +107,9 @@ export default function Login() {
             required
           />
           <VetanInput
+            id="login-password"
+            name="password"
+            autoComplete="current-password"
             label="Password"
             type="password"
             value={password}

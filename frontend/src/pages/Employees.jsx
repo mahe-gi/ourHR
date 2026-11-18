@@ -101,6 +101,7 @@ export default function Employees() {
         subtitle="Manage personnel profiles, statutory salary structures, and KYC compliance records"
         action={
           <VetanButton
+            id="btn-add-employee"
             variant="contained"
             color="primary"
             startIcon={<AddOutlinedIcon />}
