@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" fill="none">
+  <defs>
+    <linearGradient id="vetanIndigo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+    <linearGradient id="vetanEmerald" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+    <linearGradient id="vetanBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0.4" />
+    </linearGradient>
+    <filter id="vetanGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Deep Obsidian Container -->
+  <rect x="6" y="6" width="108" height="108" rx="28" fill="#090D16" />
+  <rect x="6" y="6" width="108" height="108" rx="28" stroke="url(#vetanBorder)" stroke-width="1.5" />
+
+  <!-- Geometric V Monogram -->
+  <!-- Left Pillar descending (Indigo) -->
+  <path d="M 32 34 L 60 84" stroke="url(#vetanIndigo)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Right Pillar ascending (Emerald) -->
+  <path d="M 60 84 L 88 34" stroke="url(#vetanEmerald)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Horizontal Statutory Precision Bar crossing the V -->
+  <path d="M 41 54 H 79" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round" opacity="0.9" />
+
+  <!-- Compliance Equilibrium Core Node -->
+  <circle cx="60" cy="54" r="4.5" fill="#10B981" filter="url(#vetanGlow)" />
+</svg>
