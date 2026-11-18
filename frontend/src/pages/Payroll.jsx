@@ -58,41 +58,50 @@ export default function Payroll() {
     {
       field: 'yearMonth',
       headerName: 'Pay Cycle',
-      renderCell: ({ row }) => (
-        <Typography variant="body2" sx={{ fontWeight: 600, color: '#F8FAFC' }}>
-          {row.yearMonth || '2026-11'}
-        </Typography>
-      ),
+      renderCell: ({ row }) => {
+        const ym = row.yearMonth || (row.payrollYear ? `${row.payrollYear}-${String(row.payrollMonth).padStart(2, '0')}` : '2026-11');
+        return (
+          <Typography variant="body2" sx={{ fontWeight: 600, color: '#F8FAFC' }}>
+            {ym}
+          </Typography>
+        );
+      },
     },
     {
       field: 'status',
       headerName: 'Status',
-      renderCell: ({ row }) => <VetanBadge status={row.status || 'DRAFT'} />,
+      renderCell: ({ row }) => <VetanBadge status={row.runStatus || row.status || 'DRAFT'} />,
     },
     {
       field: 'totalEmployees',
       headerName: 'Headcount',
-      renderCell: ({ row }) => row.totalEmployees || 1,
+      renderCell: ({ row }) => row.totalEmployeesCovered || row.totalEmployees || 0,
     },
     {
       field: 'totalGross',
       headerName: 'Total Gross Pay',
       isNumeric: true,
-      renderCell: ({ row }) => (
-        <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-          INR {(row.totalGross || 60000).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-        </Typography>
-      ),
+      renderCell: ({ row }) => {
+        const val = row.totalGrossPay != null ? row.totalGrossPay : (row.totalGross || 0);
+        return (
+          <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+            INR {Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </Typography>
+        );
+      },
     },
     {
       field: 'totalNet',
       headerName: 'Total Net Payout',
       isNumeric: true,
-      renderCell: ({ row }) => (
-        <Typography variant="body2" sx={{ fontWeight: 700, color: '#10B981', fontVariantNumeric: 'tabular-nums' }}>
-          INR {(row.totalNet || 55480).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-        </Typography>
-      ),
+      renderCell: ({ row }) => {
+        const val = row.totalNetPay != null ? row.totalNetPay : (row.totalNet || 0);
+        return (
+          <Typography variant="body2" sx={{ fontWeight: 700, color: '#10B981', fontVariantNumeric: 'tabular-nums' }}>
+            INR {Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </Typography>
+        );
+      },
     },
     {
       field: 'actions',

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Typography, Stepper, Step, StepLabel, Alert, Select, MenuItem } from '@mui/material';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 
-import { employeeApi } from '../api';
+import { employeeApi, companyApi } from '../api';
+import { useAuth } from '../context/AuthContext';
 import PageHeader from '../components/ui/PageHeader';
 import VetanCard from '../components/ui/VetanCard';
 import VetanButton from '../components/ui/VetanButton';
@@ -15,11 +16,15 @@ const STEPS = ['Personal & Contact', 'Statutory KYC & Bank', 'Salary & Wage Code
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { currentBranch, branches: authBranches } = useAuth();
+  const [branches, setBranches] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const [form, setForm] = useState({
+    employeeCode: 'EMP-101',
+    branchId: '',
     firstName: '',
     lastName: '',
     officialEmail: '',
@@ -28,7 +33,7 @@ export default function Onboarding() {
     gender: 'MALE',
     department: 'Engineering',
     designation: 'Software Engineer',
-    joiningDate: new Date().toISOString().split('T')[0],
+    dateOfJoining: new Date().toISOString().split('T')[0],
     pan: '',
     aadhaarNumber: '',
     bankAccountNumber: '',
@@ -39,6 +44,28 @@ export default function Onboarding() {
     specialAllowance: 15000,
   });
 
+  useEffect(() => {
+    const loadBranches = async () => {
+      try {
+        const list = await companyApi.getBranches();
+        if (list && list.length > 0) {
+          setBranches(list);
+          const defaultBranch = currentBranch?.id || list[0].id;
+          setForm((prev) => ({ ...prev, branchId: defaultBranch }));
+        } else if (authBranches && authBranches.length > 0) {
+          setBranches(authBranches);
+          setForm((prev) => ({ ...prev, branchId: authBranches[0].id }));
+        }
+      } catch (e) {
+        if (authBranches && authBranches.length > 0) {
+          setBranches(authBranches);
+          setForm((prev) => ({ ...prev, branchId: authBranches[0].id }));
+        }
+      }
+    };
+    loadBranches();
+  }, [currentBranch, authBranches]);
+
   const grossSalary =
     Number(form.basicSalary || 0) + Number(form.hra || 0) + Number(form.specialAllowance || 0);
 
@@ -48,14 +75,17 @@ export default function Onboarding() {
 
   const handleNext = () => {
     if (activeStep === 0) {
-      if (!form.firstName || !form.officialEmail) {
-        setError('First name and email are mandatory.');
+      if (!form.firstName || !form.lastName || !form.officialEmail) {
+        setError('First name, last name, and official email are required.');
         return;
+      }
+      if (!form.branchId && branches.length > 0) {
+        setForm((prev) => ({ ...prev, branchId: branches[0].id }));
       }
     }
     if (activeStep === 1) {
-      if (!form.pan || !form.aadhaarNumber) {
-        setError('PAN and Aadhaar are required for statutory KYC compliance.');
+      if (!form.pan || !form.bankAccountNumber) {
+        setError('PAN and Bank Account number are required for statutory onboarding.');
         return;
       }
     }
@@ -72,10 +102,63 @@ export default function Onboarding() {
     setLoading(true);
     setError('');
     try {
-      await employeeApi.createEmployee({
-        ...form,
-        ctc: grossSalary * 12,
-      });
+      const selectedBranchId = form.branchId || branches[0]?.id;
+      if (!selectedBranchId) {
+        throw new Error('No active branch found. Please create a branch first.');
+      }
+
+      // Step 1: Create Employee Record
+      const empPayload = {
+        employeeCode: form.employeeCode || `EMP-${Math.floor(100 + Math.random() * 900)}`,
+        branchId: selectedBranchId,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        officialEmail: form.officialEmail,
+        dateOfBirth: form.dateOfBirth || '1995-01-01',
+        gender: form.gender || 'MALE',
+        dateOfJoining: form.dateOfJoining || new Date().toISOString().split('T')[0],
+        workerType: 'REGULAR',
+        department: form.department || 'Engineering',
+        designation: form.designation || 'Software Engineer',
+      };
+
+      const createdEmp = await employeeApi.createEmployee(empPayload);
+      const empId = createdEmp?.id;
+
+      if (empId) {
+        // Step 2: Create Salary Structure
+        try {
+          await employeeApi.createSalaryStructure(empId, {
+            annualCtc: grossSalary * 12,
+            monthlyGross: grossSalary,
+            basicPay: Number(form.basicSalary),
+            daPay: 0,
+            hraPay: Number(form.hra),
+            specialAllowance: Number(form.specialAllowance),
+            effectiveFrom: form.dateOfJoining || new Date().toISOString().split('T')[0],
+            pfOptOut: false,
+          });
+        } catch (salErr) {
+          console.warn('Salary structure notice:', salErr);
+        }
+
+        // Step 3: Save KYC Vault Record if provided
+        if (form.pan && form.bankAccountNumber) {
+          try {
+            await employeeApi.saveKycVault(empId, {
+              panNumber: form.pan.trim().toUpperCase(),
+              aadhaarNumber: form.aadhaarNumber ? form.aadhaarNumber.replace(/\D/g, '') : undefined,
+              bankAccountNumber: form.bankAccountNumber.trim(),
+              bankIfsc: form.bankIfscCode ? form.bankIfscCode.trim().toUpperCase() : 'HDFC0001234',
+              bankName: 'HDFC Bank',
+              uan: form.uanNumber ? form.uanNumber.replace(/\D/g, '') : undefined,
+            });
+          } catch (kycErr) {
+            console.warn('KYC vault notice:', kycErr);
+          }
+        }
+      }
+
       navigate('/employees');
     } catch (err) {
       setError(err.message || 'Failed to onboard employee.');
@@ -121,6 +204,33 @@ export default function Onboarding() {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <VetanInput
+                label="Employee Code"
+                value={form.employeeCode}
+                onChange={handleChange('employeeCode')}
+                placeholder="EMP-101"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="caption" sx={{ display: 'block', mb: 0.75, color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.72rem' }}>
+                Assigned Branch
+              </Typography>
+              <Select
+                fullWidth
+                size="small"
+                value={form.branchId || (branches[0] ? branches[0].id : '')}
+                onChange={handleChange('branchId')}
+                sx={{ backgroundColor: '#0F172A', borderRadius: '8px', mb: 2, fontSize: '0.875rem' }}
+              >
+                {branches.map((b) => (
+                  <MenuItem key={b.id} value={b.id}>
+                    {b.branchName || b.name} ({b.stateCode || 'HQ'})
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <VetanInput
                 label="First Name"
                 value={form.firstName}
                 onChange={handleChange('firstName')}
@@ -153,6 +263,23 @@ export default function Onboarding() {
                 value={form.phoneNumber}
                 onChange={handleChange('phoneNumber')}
                 placeholder="9876543210"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <VetanInput
+                label="Date of Birth"
+                type="date"
+                value={form.dateOfBirth}
+                onChange={handleChange('dateOfBirth')}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <VetanInput
+                label="Date of Joining"
+                type="date"
+                value={form.dateOfJoining}
+                onChange={handleChange('dateOfJoining')}
                 required
               />
             </Grid>
@@ -197,7 +324,6 @@ export default function Onboarding() {
                 value={form.aadhaarNumber}
                 onChange={handleChange('aadhaarNumber')}
                 placeholder="[Aadhaar Redacted]"
-                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>

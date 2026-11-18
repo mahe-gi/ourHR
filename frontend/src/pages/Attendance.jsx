@@ -140,7 +140,7 @@ export default function Attendance() {
                 color="success"
                 startIcon={<TouchAppOutlinedIcon />}
                 loading={punching}
-                onClick={() => handleWebPunch('PUNCH_IN')}
+                onClick={() => handleWebPunch('IN')}
                 fullWidth
               >
                 Punch In (09:30)
@@ -150,7 +150,7 @@ export default function Attendance() {
                 color="error"
                 startIcon={<AccessTimeOutlinedIcon />}
                 loading={punching}
-                onClick={() => handleWebPunch('PUNCH_OUT')}
+                onClick={() => handleWebPunch('OUT')}
                 fullWidth
               >
                 Punch Out (18:30)

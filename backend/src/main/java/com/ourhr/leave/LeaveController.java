@@ -90,10 +90,15 @@ public class LeaveController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/balances/{employeeId}")
+    @GetMapping({"/balances", "/balances/{employeeId}"})
     @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'EMPLOYEE')")
     @Operation(summary = "Get immutable leave ledger balances for an employee", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<ApiResponse<List<LeaveBalanceResponse>>> getLeaveBalances(@PathVariable UUID employeeId) {
+    public ResponseEntity<ApiResponse<List<LeaveBalanceResponse>>> getLeaveBalances(
+            @PathVariable(value = "employeeId", required = false) UUID employeeId
+    ) {
+        if (employeeId == null) {
+            return ResponseEntity.ok(ApiResponse.success(java.util.Collections.emptyList()));
+        }
         List<LeaveBalanceResponse> responses = leaveLedgerService.getLeaveBalances(employeeId);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
@@ -113,7 +118,7 @@ public class LeaveController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/applications")
+    @GetMapping({"/applications", "/requests"})
     @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'EMPLOYEE')")
     @Operation(summary = "List leave applications", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ApiResponse<List<LeaveApplicationResponse>>> getLeaveApplications(

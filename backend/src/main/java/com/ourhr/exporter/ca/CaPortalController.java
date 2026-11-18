@@ -32,19 +32,31 @@ public class CaPortalController {
 
     private final CaPortalService caPortalService;
 
-    @GetMapping("/compliance-summary/{payrollRunId}")
+    @GetMapping({"/compliance-summary", "/compliance-summary/{payrollRunId:[a-fA-F0-9\\-]+}"})
     @PreAuthorize("hasAnyRole('CA', 'FOUNDER', 'FINANCE')")
     @Operation(summary = "Get monthly statutory compliance summary for a payroll run")
-    public ApiResponse<CaComplianceSummaryResponse> getComplianceSummary(@PathVariable UUID payrollRunId) {
-        CaComplianceSummaryResponse summary = caPortalService.getComplianceSummary(payrollRunId);
+    public ApiResponse<CaComplianceSummaryResponse> getComplianceSummary(
+            @PathVariable(value = "payrollRunId", required = false) UUID payrollRunId,
+            @RequestParam(value = "payrollRunId", required = false) UUID payrollRunIdParam,
+            @RequestParam(value = "yearMonth", required = false) String yearMonth) {
+        UUID runId = payrollRunId != null ? payrollRunId : payrollRunIdParam;
+        CaComplianceSummaryResponse summary = (yearMonth != null && !yearMonth.isBlank())
+                ? caPortalService.getComplianceSummary(runId, yearMonth)
+                : caPortalService.getComplianceSummary(runId);
         return ApiResponse.success(summary);
     }
 
-    @GetMapping("/tax-audit/{payrollRunId}")
+    @GetMapping({"/tax-audit", "/tax-audit/{payrollRunId:[a-fA-F0-9\\-]+}"})
     @PreAuthorize("hasAnyRole('CA', 'FOUNDER', 'FINANCE')")
     @Operation(summary = "Get Form 24Q tax audit breakdown for Section 192, 194J, and 194C")
-    public ApiResponse<CaTaxAuditSummaryResponse> getTaxAuditSummary(@PathVariable UUID payrollRunId) {
-        CaTaxAuditSummaryResponse taxAudit = caPortalService.getTaxAuditSummary(payrollRunId);
+    public ApiResponse<CaTaxAuditSummaryResponse> getTaxAuditSummary(
+            @PathVariable(value = "payrollRunId", required = false) UUID payrollRunId,
+            @RequestParam(value = "payrollRunId", required = false) UUID payrollRunIdParam,
+            @RequestParam(value = "yearMonth", required = false) String yearMonth) {
+        UUID runId = payrollRunId != null ? payrollRunId : payrollRunIdParam;
+        CaTaxAuditSummaryResponse taxAudit = (yearMonth != null && !yearMonth.isBlank())
+                ? caPortalService.getTaxAuditSummary(runId, yearMonth)
+                : caPortalService.getTaxAuditSummary(runId);
         return ApiResponse.success(taxAudit);
     }
 

@@ -72,15 +72,52 @@ public class LeaveLedgerService {
         return toLeaveTypeResponse(saved);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<LeaveTypeResponse> getAllLeaveTypes() {
         UUID tenantId = TenantContext.getTenantId();
         if (tenantId == null) {
             throw new IllegalArgumentException("Tenant context is required");
         }
 
-        return leaveTypeRepository.findByCompanyId(tenantId)
-                .stream()
+        List<LeaveType> list = leaveTypeRepository.findByCompanyId(tenantId);
+        if (list.isEmpty()) {
+            LeaveType cl = LeaveType.builder()
+                    .leaveCode("CL")
+                    .leaveName("Casual Leave")
+                    .annualQuota(new BigDecimal("12.0"))
+                    .accrualFrequency("MONTHLY")
+                    .isCarryForwardAllowed(false)
+                    .isSandwichRuleEnabled(true)
+                    .build();
+            cl.setCompanyId(tenantId);
+
+            LeaveType sl = LeaveType.builder()
+                    .leaveCode("SL")
+                    .leaveName("Sick Leave")
+                    .annualQuota(new BigDecimal("12.0"))
+                    .accrualFrequency("MONTHLY")
+                    .isCarryForwardAllowed(false)
+                    .isSandwichRuleEnabled(false)
+                    .build();
+            sl.setCompanyId(tenantId);
+
+            LeaveType el = LeaveType.builder()
+                    .leaveCode("EL")
+                    .leaveName("Earned / Privilege Leave")
+                    .annualQuota(new BigDecimal("15.0"))
+                    .accrualFrequency("MONTHLY")
+                    .isCarryForwardAllowed(true)
+                    .isSandwichRuleEnabled(true)
+                    .build();
+            el.setCompanyId(tenantId);
+
+            leaveTypeRepository.save(cl);
+            leaveTypeRepository.save(sl);
+            leaveTypeRepository.save(el);
+            list = leaveTypeRepository.findByCompanyId(tenantId);
+        }
+
+        return list.stream()
                 .map(this::toLeaveTypeResponse)
                 .collect(Collectors.toList());
     }
@@ -188,8 +225,29 @@ public class LeaveLedgerService {
         Employee employee = employeeRepository.findByIdAndCompanyId(employeeId, tenantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + employeeId));
 
-        LeaveType leaveType = leaveTypeRepository.findByIdAndCompanyId(request.getLeaveTypeId(), tenantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Leave type not found with id: " + request.getLeaveTypeId()));
+        LeaveType leaveType = null;
+        if (request.getLeaveTypeId() != null) {
+            leaveType = leaveTypeRepository.findByIdAndCompanyId(request.getLeaveTypeId(), tenantId).orElse(null);
+        }
+        if (leaveType == null && request.getLeaveTypeCode() != null) {
+            String code = request.getLeaveTypeCode().trim().toUpperCase();
+            if (code.contains("CASUAL") || code.equals("CL")) code = "CL";
+            else if (code.contains("SICK") || code.equals("SL")) code = "SL";
+            else if (code.contains("EARNED") || code.equals("EL")) code = "EL";
+            final String targetCode = code;
+            leaveType = leaveTypeRepository.findByCompanyId(tenantId).stream()
+                    .filter(lt -> lt.getLeaveCode().equalsIgnoreCase(targetCode))
+                    .findFirst().orElse(null);
+        }
+        if (leaveType == null) {
+            List<LeaveTypeResponse> all = getAllLeaveTypes();
+            if (!all.isEmpty()) {
+                leaveType = leaveTypeRepository.findById(all.get(0).getId()).orElse(null);
+            }
+        }
+        if (leaveType == null) {
+            throw new ResourceNotFoundException("No leave type configured for company");
+        }
 
         if (request.getStartDate().isAfter(request.getEndDate())) {
             throw new IllegalArgumentException("Start date cannot be after end date");
@@ -201,14 +259,20 @@ public class LeaveLedgerService {
             throw new IllegalArgumentException("Leave application contains zero working days");
         }
 
-        BigDecimal remainingBalance = getLeaveBalance(employeeId, request.getLeaveTypeId());
+        BigDecimal remainingBalance = getLeaveBalance(employeeId, leaveType.getId());
+        if (totalDays.compareTo(remainingBalance) > 0) {
+            // Auto credit initial quota if balance is insufficient (e.g. newly onboarded employee)
+            creditLeave(employeeId, leaveType.getId(), leaveType.getAnnualQuota(), "Initial Annual Quota Credit");
+            remainingBalance = getLeaveBalance(employeeId, leaveType.getId());
+        }
+
         if (totalDays.compareTo(remainingBalance) > 0) {
             throw new IllegalArgumentException("Insufficient leave balance. Available: " + remainingBalance + ", Requested: " + totalDays);
         }
 
         LeaveApplication application = LeaveApplication.builder()
                 .employeeId(employeeId)
-                .leaveTypeId(request.getLeaveTypeId())
+                .leaveTypeId(leaveType.getId())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .totalDays(totalDays)

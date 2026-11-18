@@ -73,7 +73,7 @@ export default function PayrollStepperPage() {
   return (
     <Box>
       <PageHeader
-        title={`Payroll Cycle: ${run?.yearMonth || '2026-11'}`}
+        title={`Payroll Cycle: ${run?.yearMonth || (run?.payrollYear ? `${run.payrollYear}-${String(run.payrollMonth).padStart(2, '0')}` : '2026-11')}`}
         subtitle="6-step Indian statutory wage computation, tax deductions, and disbursal lock"
         action={
           <Box sx={{ display: 'flex', gap: 1.5 }}>
@@ -84,7 +84,7 @@ export default function PayrollStepperPage() {
             >
               All Runs
             </VetanButton>
-            <VetanBadge status={run?.status || 'CALCULATED'} />
+            <VetanBadge status={run?.runStatus || run?.status || 'CALCULATED'} />
           </Box>
         }
       />

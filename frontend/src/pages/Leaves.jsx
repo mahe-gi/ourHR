@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Typography, IconButton, Tooltip } from '@mui/material';
+import { Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Typography, IconButton, Tooltip, Alert } from '@mui/material';
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
@@ -15,12 +15,15 @@ import SandwichRuleVisualizer from '../components/domain/SandwichRuleVisualizer'
 export default function Leaves() {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [leaveTypes, setLeaveTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const [form, setForm] = useState({
     employeeId: '',
+    leaveTypeId: '',
     leaveTypeCode: 'CASUAL_LEAVE',
     startDate: '2026-11-20',
     endDate: '2026-11-23',
@@ -30,16 +33,22 @@ export default function Leaves() {
   const fetchLeaves = async () => {
     setLoading(true);
     try {
-      const [reqData, empData] = await Promise.all([
+      const [reqData, empData, typeData] = await Promise.all([
         leaveApi.getLeaveRequests().catch(() => []),
         employeeApi.getEmployees().catch(() => []),
+        leaveApi.getLeaveTypes().catch(() => []),
       ]);
       setLeaveRequests(Array.isArray(reqData) ? reqData : []);
       const emps = Array.isArray(empData) ? empData : (empData?.content || []);
       setEmployees(emps);
-      if (emps.length > 0) {
-        setForm((prev) => ({ ...prev, employeeId: emps[0].id }));
-      }
+      const types = Array.isArray(typeData) ? typeData : [];
+      setLeaveTypes(types);
+
+      setForm((prev) => ({
+        ...prev,
+        employeeId: prev.employeeId || emps[0]?.id || '',
+        leaveTypeId: prev.leaveTypeId || types[0]?.id || '',
+      }));
     } catch (err) {
       console.error(err);
     } finally {
@@ -54,12 +63,26 @@ export default function Leaves() {
   const handleApply = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setSubmitError('');
     try {
-      await leaveApi.applyLeave(form);
+      const targetType = leaveTypes.find(
+        (t) => t.id === form.leaveTypeId || t.leaveCode === form.leaveTypeCode
+      );
+
+      const payload = {
+        employeeId: form.employeeId || employees[0]?.id,
+        leaveTypeId: targetType?.id || form.leaveTypeId || undefined,
+        leaveTypeCode: form.leaveTypeCode,
+        startDate: form.startDate,
+        endDate: form.endDate,
+        reason: form.reason,
+      };
+
+      await leaveApi.applyLeave(payload);
       setOpenModal(false);
       fetchLeaves();
     } catch (err) {
-      alert(err.message || 'Failed to submit leave request');
+      setSubmitError(err.message || 'Failed to submit leave request');
     } finally {
       setSaving(false);
     }
@@ -168,6 +191,12 @@ export default function Leaves() {
 
         <form onSubmit={handleApply}>
           <DialogContent sx={{ py: 2 }}>
+            {submitError && (
+              <Alert severity="error" sx={{ mb: 2, backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444' }}>
+                {submitError}
+              </Alert>
+            )}
+
             <Typography variant="caption" sx={{ display: 'block', mb: 0.75, color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.72rem' }}>
               Employee
             </Typography>
@@ -191,13 +220,31 @@ export default function Leaves() {
             <Select
               fullWidth
               size="small"
-              value={form.leaveTypeCode}
-              onChange={(e) => setForm({ ...form, leaveTypeCode: e.target.value })}
+              value={form.leaveTypeId || form.leaveTypeCode}
+              onChange={(e) => {
+                const val = e.target.value;
+                const match = leaveTypes.find((t) => t.id === val || t.leaveCode === val);
+                setForm({
+                  ...form,
+                  leaveTypeId: match ? match.id : val,
+                  leaveTypeCode: match ? match.leaveCode : val,
+                });
+              }}
               sx={{ backgroundColor: '#1E293B', borderRadius: '8px', mb: 2 }}
             >
-              <MenuItem value="CASUAL_LEAVE">Casual Leave (CL)</MenuItem>
-              <MenuItem value="SICK_LEAVE">Sick Leave (SL)</MenuItem>
-              <MenuItem value="EARNED_LEAVE">Earned / Privilege Leave (EL/PL)</MenuItem>
+              {leaveTypes.length > 0 ? (
+                leaveTypes.map((lt) => (
+                  <MenuItem key={lt.id} value={lt.id}>
+                    {lt.leaveName} ({lt.leaveCode})
+                  </MenuItem>
+                ))
+              ) : (
+                [
+                  <MenuItem key="CL" value="CASUAL_LEAVE">Casual Leave (CL)</MenuItem>,
+                  <MenuItem key="SL" value="SICK_LEAVE">Sick Leave (SL)</MenuItem>,
+                  <MenuItem key="EL" value="EARNED_LEAVE">Earned / Privilege Leave (EL/PL)</MenuItem>,
+                ]
+              )}
             </Select>
 
             <Grid container spacing={2}>

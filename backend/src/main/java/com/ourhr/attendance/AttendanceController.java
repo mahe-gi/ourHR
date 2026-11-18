@@ -69,7 +69,7 @@ public class AttendanceController {
         )));
     }
 
-    @GetMapping("/logs")
+    @GetMapping({"/logs", "/daily"})
     @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA', 'EMPLOYEE')")
     @Operation(summary = "Retrieve attendance punch logs", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ApiResponse<List<PunchResponse>>> getAttendanceLogs(

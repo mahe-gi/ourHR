@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/shifts")
+@RequestMapping({"/api/v1/shifts", "/api/v1/attendance/shifts"})
 @RequiredArgsConstructor
 @Tag(name = "Shift Management", description = "Endpoints for configuring and viewing tenant work shifts")
 public class ShiftController {

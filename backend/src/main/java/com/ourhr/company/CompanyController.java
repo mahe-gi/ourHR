@@ -1,6 +1,7 @@
 package com.ourhr.company;
 
 import com.ourhr.common.ApiResponse;
+import com.ourhr.company.dto.BranchResponse;
 import com.ourhr.company.dto.CompanyResponse;
 import com.ourhr.company.dto.UpdateCompanyRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/companies")
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final BranchService branchService;
 
     @GetMapping("/current")
     @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA')")
@@ -31,6 +35,15 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<CompanyResponse>> getCurrentCompany() {
         CompanyResponse response = companyService.getCurrentCompany();
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/branches")
+    @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA', 'EMPLOYEE')")
+    @Operation(summary = "Retrieve company branch locations",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<ApiResponse<List<BranchResponse>>> getCompanyBranches() {
+        List<BranchResponse> responses = branchService.getAllBranches();
+        return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
     @PutMapping("/current")

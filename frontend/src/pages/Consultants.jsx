@@ -37,7 +37,7 @@ export default function Consultants() {
       renderCell: ({ row }) => (
         <Box>
           <Typography variant="body2" sx={{ fontWeight: 600, color: '#F8FAFC' }}>
-            {row.name || 'Advisory Partner'}
+            {row.consultantName || row.name || 'Advisory Partner'}
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
             {row.email || 'consultant@partner.com'}
@@ -58,38 +58,47 @@ export default function Consultants() {
       field: 'pan',
       headerName: 'PAN',
       renderCell: ({ row }) => (
-        <KycMaskedViewer label="PAN" value={row.pan || 'ABCDE1234F'} type="pan" />
+        <KycMaskedViewer label="PAN" value={row.panNumber || row.pan || 'ABCDE1234F'} type="pan" />
       ),
     },
     {
       field: 'retainerAmount',
       headerName: 'Gross Retainer',
       isNumeric: true,
-      renderCell: ({ row }) => (
-        <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
-          INR {(row.retainerAmount || 50000).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-        </Typography>
-      ),
+      renderCell: ({ row }) => {
+        const val = row.grossAmount != null ? row.grossAmount : (row.retainerAmount || 0);
+        return (
+          <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+            INR {Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </Typography>
+        );
+      },
     },
     {
       field: 'tdsDeduction',
       headerName: 'TDS Withheld',
       isNumeric: true,
-      renderCell: ({ row }) => (
-        <Typography variant="body2" sx={{ color: '#EF4444', fontVariantNumeric: 'tabular-nums' }}>
-          - INR {(row.tdsDeduction || 5000).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-        </Typography>
-      ),
+      renderCell: ({ row }) => {
+        const val = row.tdsAmount != null ? row.tdsAmount : (row.tdsDeduction || 0);
+        return (
+          <Typography variant="body2" sx={{ color: '#EF4444', fontVariantNumeric: 'tabular-nums' }}>
+            - INR {Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </Typography>
+        );
+      },
     },
     {
       field: 'netPayable',
       headerName: 'Net Payable',
       isNumeric: true,
-      renderCell: ({ row }) => (
-        <Typography variant="body2" sx={{ fontWeight: 700, color: '#10B981', fontVariantNumeric: 'tabular-nums' }}>
-          INR {(row.netPayable || 45000).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-        </Typography>
-      ),
+      renderCell: ({ row }) => {
+        const val = row.netPayable != null ? row.netPayable : 0;
+        return (
+          <Typography variant="body2" sx={{ fontWeight: 700, color: '#10B981', fontVariantNumeric: 'tabular-nums' }}>
+            INR {Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+          </Typography>
+        );
+      },
     },
     {
       field: 'status',

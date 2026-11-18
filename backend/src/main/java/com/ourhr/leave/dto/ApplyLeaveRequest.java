@@ -18,8 +18,9 @@ public class ApplyLeaveRequest {
 
     private UUID employeeId;
 
-    @NotNull(message = "Leave type ID is required")
     private UUID leaveTypeId;
+
+    private String leaveTypeCode;
 
     @NotNull(message = "Start date is required")
     private LocalDate startDate;

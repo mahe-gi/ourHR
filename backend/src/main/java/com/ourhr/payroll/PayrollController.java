@@ -56,7 +56,14 @@ public class PayrollController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
+    @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA')")
+    public ResponseEntity<ApiResponse<List<PayrollRunResponse>>> getAllPayrollRuns() {
+        List<PayrollRunResponse> responses = payrollRunnerService.getAllPayrollRuns();
+        return ResponseEntity.ok(ApiResponse.success(responses));
+    }
+
+    @GetMapping("/{id:[a-fA-F0-9\\-]+}")
     @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA')")
     public ResponseEntity<ApiResponse<PayrollRunResponse>> getPayrollRun(
             @PathVariable("id") UUID id
@@ -65,7 +72,7 @@ public class PayrollController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/{id}/audit")
+    @GetMapping("/{id:[a-fA-F0-9\\-]+}/audit")
     @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA')")
     public ResponseEntity<ApiResponse<List<PayrollAuditDiffResponse>>> getPayrollAudit(
             @PathVariable("id") UUID id
@@ -74,7 +81,7 @@ public class PayrollController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/{id}/payslips/{employeeId}")
+    @GetMapping("/{id:[a-fA-F0-9\\-]+}/payslips/{employeeId}")
     @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA', 'EMPLOYEE')")
     public ResponseEntity<ApiResponse<PayslipSummaryDto>> getPayslipSummary(
             @PathVariable("id") UUID id,

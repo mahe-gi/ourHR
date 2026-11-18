@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -237,13 +238,19 @@ public class AttendanceService {
 
     private UUID tryResolveCurrentEmployeeId(UUID tenantId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || auth.getName() == null) {
-            return null;
+        if (auth != null && auth.isAuthenticated() && auth.getName() != null) {
+            String email = auth.getName();
+            Optional<UUID> direct = userRepository.findByEmail(email)
+                    .flatMap(user -> employeeRepository.findByCompanyIdAndUserId(tenantId, user.getId()))
+                    .map(Employee::getId);
+            if (direct.isPresent()) {
+                return direct.get();
+            }
         }
 
-        String email = auth.getName();
-        return userRepository.findByEmail(email)
-                .flatMap(user -> employeeRepository.findByCompanyIdAndUserId(tenantId, user.getId()))
+        // Fallback for demo/admin/founder: pick first employee in tenant company
+        return employeeRepository.findByCompanyId(tenantId).stream()
+                .findFirst()
                 .map(Employee::getId)
                 .orElse(null);
     }

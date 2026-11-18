@@ -53,8 +53,47 @@ public class CaPortalService {
 
     @Transactional(readOnly = true)
     public CaComplianceSummaryResponse getComplianceSummary(UUID payrollRunId) {
+        return getComplianceSummary(payrollRunId, null);
+    }
+
+    @Transactional(readOnly = true)
+    public CaComplianceSummaryResponse getComplianceSummary(UUID payrollRunId, String yearMonth) {
         UUID companyId = resolveCurrentCompanyId();
-        PayrollRun run = getPayrollRunOrThrow(companyId, payrollRunId);
+        PayrollRun run = null;
+        if (payrollRunId != null) {
+            run = getPayrollRunOrThrow(companyId, payrollRunId);
+        } else if (yearMonth != null && yearMonth.contains("-")) {
+            try {
+                String[] parts = yearMonth.trim().split("-");
+                int y = Integer.parseInt(parts[0]);
+                int m = Integer.parseInt(parts[1]);
+                run = payrollRunRepository.findByCompanyIdAndPayrollMonthAndPayrollYear(companyId, m, y).orElse(null);
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (run == null) {
+            List<PayrollRun> runs = payrollRunRepository.findByCompanyIdOrderByPayrollYearDescPayrollMonthDesc(companyId);
+            if (runs.isEmpty()) {
+                return CaComplianceSummaryResponse.builder()
+                        .payrollRunId(UUID.randomUUID())
+                        .payrollMonth(java.time.LocalDate.now().getMonthValue())
+                        .payrollYear(java.time.LocalDate.now().getYear())
+                        .totalEmployeesCovered(0)
+                        .totalGrossWages(BigDecimal.ZERO)
+                        .totalNetDisbursed(BigDecimal.ZERO)
+                        .totalPfContribution(BigDecimal.ZERO)
+                        .totalEsicContribution(BigDecimal.ZERO)
+                        .totalPtContribution(BigDecimal.ZERO)
+                        .totalTdsDeducted(BigDecimal.ZERO)
+                        .ecrFileStatus("NO_RUNS")
+                        .bankPayoutStatus("NO_RUNS")
+                        .finalizedAt(java.time.Instant.now())
+                        .build();
+            }
+            run = runs.get(0);
+        }
+        payrollRunId = run.getId();
 
         List<PayslipLineItem> items = payslipLineItemRepository
                 .findByCompanyIdAndPayrollRunId(companyId, payrollRunId);
@@ -88,8 +127,42 @@ public class CaPortalService {
 
     @Transactional(readOnly = true)
     public CaTaxAuditSummaryResponse getTaxAuditSummary(UUID payrollRunId) {
+        return getTaxAuditSummary(payrollRunId, null);
+    }
+
+    @Transactional(readOnly = true)
+    public CaTaxAuditSummaryResponse getTaxAuditSummary(UUID payrollRunId, String yearMonth) {
         UUID companyId = resolveCurrentCompanyId();
-        PayrollRun run = getPayrollRunOrThrow(companyId, payrollRunId);
+        PayrollRun run = null;
+        if (payrollRunId != null) {
+            run = getPayrollRunOrThrow(companyId, payrollRunId);
+        } else if (yearMonth != null && yearMonth.contains("-")) {
+            try {
+                String[] parts = yearMonth.trim().split("-");
+                int y = Integer.parseInt(parts[0]);
+                int m = Integer.parseInt(parts[1]);
+                run = payrollRunRepository.findByCompanyIdAndPayrollMonthAndPayrollYear(companyId, m, y).orElse(null);
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (run == null) {
+            List<PayrollRun> runs = payrollRunRepository.findByCompanyIdOrderByPayrollYearDescPayrollMonthDesc(companyId);
+            if (runs.isEmpty()) {
+                return CaTaxAuditSummaryResponse.builder()
+                        .payrollRunId(UUID.randomUUID())
+                        .payrollMonth(java.time.LocalDate.now().getMonthValue())
+                        .payrollYear(java.time.LocalDate.now().getYear())
+                        .totalTaxDeducted(BigDecimal.ZERO)
+                        .totalTdsSection192(BigDecimal.ZERO)
+                        .totalTdsSection194J(BigDecimal.ZERO)
+                        .totalTdsSection194C(BigDecimal.ZERO)
+                        .auditLineItems(java.util.Collections.emptyList())
+                        .build();
+            }
+            run = runs.get(0);
+        }
+        payrollRunId = run.getId();
 
         List<PayslipLineItem> items = payslipLineItemRepository
                 .findByCompanyIdAndPayrollRunId(companyId, payrollRunId);

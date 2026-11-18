@@ -372,6 +372,15 @@ public class PayrollRunnerService {
     }
 
     @Transactional(readOnly = true)
+    public List<PayrollRunResponse> getAllPayrollRuns() {
+        UUID tenantId = TenantContext.getTenantId();
+        return payrollRunRepository.findByCompanyIdOrderByPayrollYearDescPayrollMonthDesc(tenantId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public PayrollRunResponse getPayrollRun(UUID payrollRunId) {
         UUID tenantId = TenantContext.getTenantId();
         PayrollRun run = getRunOrThrow(tenantId, payrollRunId);

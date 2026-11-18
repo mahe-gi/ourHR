@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Typography, Chip, Tooltip, IconButton } from '@mui/material';
+import { Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Typography, Chip, Tooltip, IconButton, Alert } from '@mui/material';
 import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
@@ -28,6 +28,7 @@ export default function Branches() {
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const [form, setForm] = useState({
     branchName: '',
@@ -61,6 +62,7 @@ export default function Branches() {
   const handleCreateBranch = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setErrorMsg('');
     try {
       await companyApi.createBranch(form);
       setOpenModal(false);
@@ -74,7 +76,7 @@ export default function Branches() {
       });
       fetchBranches();
     } catch (err) {
-      alert(err.message || 'Failed to create branch');
+      setErrorMsg(err.message || 'Failed to create branch');
     } finally {
       setSaving(false);
     }
@@ -179,6 +181,11 @@ export default function Branches() {
 
         <form onSubmit={handleCreateBranch}>
           <DialogContent sx={{ py: 2 }}>
+            {errorMsg && (
+              <Alert severity="error" sx={{ mb: 2, backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444' }}>
+                {errorMsg}
+              </Alert>
+            )}
             <VetanInput
               label="Branch Name"
               value={form.branchName}

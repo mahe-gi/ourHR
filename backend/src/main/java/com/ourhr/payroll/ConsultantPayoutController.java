@@ -7,10 +7,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/payroll/consultants")
@@ -18,6 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConsultantPayoutController {
 
     private final ConsultantPayoutService consultantPayoutService;
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA')")
+    public ResponseEntity<ApiResponse<List<ConsultantPayoutResponse>>> getConsultants() {
+        List<ConsultantPayoutResponse> list = consultantPayoutService.getConsultants();
+        return ResponseEntity.ok(ApiResponse.success(list));
+    }
 
     @PostMapping("/payout")
     @PreAuthorize("hasAnyRole('FOUNDER', 'FINANCE')")
