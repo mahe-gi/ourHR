@@ -23,8 +23,20 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const data = await login(email, password);
+      const roles = data?.roles || (data?.role ? [data.role] : []);
+      const isPureEmployee =
+        roles.includes('ROLE_EMPLOYEE') &&
+        !roles.includes('ROLE_FOUNDER') &&
+        !roles.includes('ROLE_HR') &&
+        !roles.includes('ROLE_FINANCE') &&
+        !roles.includes('ROLE_CA');
+
+      if (isPureEmployee) {
+        navigate('/ess');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.message || 'Invalid email or password.');
     } finally {

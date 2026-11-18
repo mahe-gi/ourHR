@@ -28,6 +28,19 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const roles = user?.roles || (user?.role ? [user.role] : []);
+    const isPureEmployee =
+      roles.includes('ROLE_EMPLOYEE') &&
+      !roles.includes('ROLE_FOUNDER') &&
+      !roles.includes('ROLE_HR') &&
+      !roles.includes('ROLE_FINANCE') &&
+      !roles.includes('ROLE_CA');
+
+    if (isPureEmployee) {
+      navigate('/ess', { replace: true });
+      return;
+    }
+
     const fetchDashboardData = async () => {
       try {
         const [empData, payData, leaveData] = await Promise.all([

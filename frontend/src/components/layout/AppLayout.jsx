@@ -33,14 +33,14 @@ import BranchSelector from '../domain/BranchSelector';
 const DRAWER_WIDTH = 240;
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/dashboard', icon: DashboardOutlinedIcon, roles: ['ALL'] },
+  { label: 'Dashboard', path: '/dashboard', icon: DashboardOutlinedIcon, roles: ['ROLE_FOUNDER', 'ROLE_HR', 'ROLE_FINANCE', 'ROLE_CA'] },
+  { label: 'Employee Portal', path: '/ess', icon: BadgeOutlinedIcon, roles: ['ROLE_EMPLOYEE', 'ROLE_FOUNDER', 'ROLE_HR'] },
   { label: 'Employees', path: '/employees', icon: PeopleOutlineIcon, roles: ['ROLE_FOUNDER', 'ROLE_HR'] },
   { label: 'Attendance', path: '/attendance', icon: AccessTimeOutlinedIcon, roles: ['ROLE_FOUNDER', 'ROLE_HR'] },
-  { label: 'Leaves', path: '/leaves', icon: EventNoteOutlinedIcon, roles: ['ROLE_FOUNDER', 'ROLE_HR'] },
+  { label: 'Leaves', path: '/leaves', icon: EventNoteOutlinedIcon, roles: ['ROLE_EMPLOYEE', 'ROLE_FOUNDER', 'ROLE_HR'] },
   { label: 'Payroll', path: '/payroll', icon: PaymentsOutlinedIcon, roles: ['ROLE_FOUNDER', 'ROLE_FINANCE'] },
   { label: 'CA & Compliance', path: '/ca-workspace', icon: VerifiedUserOutlinedIcon, roles: ['ROLE_FOUNDER', 'ROLE_FINANCE', 'ROLE_CA'] },
   { label: 'Branches', path: '/branches', icon: BusinessOutlinedIcon, roles: ['ROLE_FOUNDER', 'ROLE_HR'] },
-  { label: 'Employee Portal', path: '/ess', icon: BadgeOutlinedIcon, roles: ['ROLE_EMPLOYEE', 'ROLE_FOUNDER', 'ROLE_HR'] },
 ];
 
 export default function AppLayout() {
@@ -53,11 +53,13 @@ export default function AppLayout() {
     setMobileOpen(!mobileOpen);
   };
 
-  const userRole = user?.role || 'ROLE_FOUNDER';
+  const userRoles = Array.isArray(user?.roles) && user.roles.length > 0
+    ? user.roles
+    : [user?.role || 'ROLE_FOUNDER'];
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (item.roles.includes('ALL')) return true;
-    return item.roles.includes(userRole);
+    return item.roles.some((r) => userRoles.includes(r));
   });
 
   const drawerContent = (

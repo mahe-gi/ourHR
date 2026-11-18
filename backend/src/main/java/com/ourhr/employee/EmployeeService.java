@@ -58,9 +58,10 @@ public class EmployeeService {
                 }
                 linkedUserId = user.getId();
             } else {
+                String initialPassword = "Welcome@1234";
                 User newUser = User.builder()
                         .email(email)
-                        .passwordHash(passwordEncoder.encode(UUID.randomUUID().toString()))
+                        .passwordHash(passwordEncoder.encode(initialPassword))
                         .fullName(request.getFirstName().trim() + " " + request.getLastName().trim())
                         .isActive(true)
                         .build();
