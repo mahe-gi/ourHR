@@ -26,7 +26,9 @@ apiClient.interceptors.response.use(
       }
       let msg = response.data.error?.message || 'Request failed';
       if (response.data.error?.details && Array.isArray(response.data.error.details)) {
-        const issues = response.data.error.details.map((d) => `${d.field}: ${d.issue}`).join('; ');
+        const issues = response.data.error.details
+          .map((d) => (d.issue || d.message ? `${d.field}: ${d.issue || d.message}` : (typeof d === 'string' ? d : JSON.stringify(d))))
+          .join('; ');
         if (issues) msg = `${msg} (${issues})`;
       }
       const err = new Error(msg);
@@ -46,7 +48,9 @@ apiClient.interceptors.response.use(
     }
     let message = error.response?.data?.error?.message || error.message || 'Network error';
     if (error.response?.data?.error?.details && Array.isArray(error.response.data.error.details)) {
-      const issues = error.response.data.error.details.map((d) => `${d.field}: ${d.issue}`).join('; ');
+      const issues = error.response.data.error.details
+        .map((d) => (d.issue || d.message ? `${d.field}: ${d.issue || d.message}` : (typeof d === 'string' ? d : JSON.stringify(d))))
+        .join('; ');
       if (issues) message = `${message} (${issues})`;
     }
     const enhancedError = new Error(message);

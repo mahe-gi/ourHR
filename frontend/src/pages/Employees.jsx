@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Typography, Chip, Tooltip, IconButton } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Box, Typography, Chip, Tooltip, IconButton, Alert } from '@mui/material';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -14,6 +14,7 @@ import KycMaskedViewer from '../components/domain/KycMaskedViewer';
 
 export default function Employees() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -80,7 +81,7 @@ export default function Employees() {
       renderCell: ({ row }) => (
         <KycMaskedViewer
           label="Aadhaar"
-          value={row.aadhaarNumber || 'XXXXXXXX1234'}
+          value={row.maskedAadhaar || row.aadhaarNumber || '[Aadhaar Redacted]'}
           type="aadhaar"
         />
       ),
@@ -109,6 +110,12 @@ export default function Employees() {
           </VetanButton>
         }
       />
+
+      {location.state?.createdEmail && (
+        <Alert severity="success" sx={{ mb: 3, backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10B981' }}>
+          Employee profile created for <strong>{location.state.createdEmail}</strong>! Initial self-service password is <strong>Welcome@1234</strong>.
+        </Alert>
+      )}
 
       <DataTable
         columns={columns}

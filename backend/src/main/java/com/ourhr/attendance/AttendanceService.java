@@ -223,9 +223,15 @@ public class AttendanceService {
 
     private UUID resolveEmployeeId(UUID requestEmployeeId, UUID tenantId) {
         if (requestEmployeeId != null) {
-            employeeRepository.findByIdAndCompanyId(requestEmployeeId, tenantId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + requestEmployeeId));
-            return requestEmployeeId;
+            var emp = employeeRepository.findByIdAndCompanyId(requestEmployeeId, tenantId);
+            if (emp.isPresent()) {
+                return requestEmployeeId;
+            }
+            var empByUser = employeeRepository.findByCompanyIdAndUserId(tenantId, requestEmployeeId);
+            if (empByUser.isPresent()) {
+                return empByUser.get().getId();
+            }
+            throw new ResourceNotFoundException("Employee not found with id: " + requestEmployeeId);
         }
 
         UUID currentEmpId = tryResolveCurrentEmployeeId(tenantId);

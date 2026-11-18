@@ -24,7 +24,6 @@ export default function EssHome() {
     setPunchStatus('');
     try {
       await attendanceApi.punch({
-        employeeId: user?.id || 'emp-self',
         punchType: type,
         latitude: 12.9716,
         longitude: 77.5946,

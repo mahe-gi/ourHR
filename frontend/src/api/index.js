@@ -72,6 +72,8 @@ export const leaveApi = {
   applyLeave: (payload) => apiClient.post('/leaves/apply', payload),
   getLeaveRequests: () => apiClient.get('/leaves/requests'),
   getLeaveApplications: () => apiClient.get('/leaves/applications'),
+  approveLeave: (id) => apiClient.post(`/leaves/${id}/approve`),
+  rejectLeave: (id, reason = 'Rejected by HR') => apiClient.post(`/leaves/${id}/reject`, { reason }),
 };
 
 export const payrollApi = {
@@ -91,6 +93,7 @@ export const payrollApi = {
     });
   },
   calculatePayroll: (id) => apiClient.post(`/payroll/${id}/calculate`),
+  transitionStep: (id, targetStatus) => apiClient.post(`/payroll/${id}/step`, { targetStatus }),
   disbursePayroll: (id) => apiClient.post(`/payroll/${id}/step`, { targetStatus: 'DISBURSED' }),
   getConsultants: () => apiClient.get('/payroll/consultants').catch(() => []),
   calculatePreview: (payload) => apiClient.post('/statutory/calculate', payload),

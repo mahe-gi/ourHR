@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Box, Typography, Paper, Alert } from '@mui/material';
+import { Box, Typography, Paper, Alert, Chip } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VetanInput from '../components/ui/VetanInput';
 import VetanButton from '../components/ui/VetanButton';
@@ -13,6 +13,12 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleQuickLogin = (demoEmail, demoPassword) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setError('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,6 +40,13 @@ export default function Login() {
 
       if (isPureEmployee) {
         navigate('/ess');
+      } else if (
+        roles.includes('ROLE_CA') &&
+        !roles.includes('ROLE_FOUNDER') &&
+        !roles.includes('ROLE_HR') &&
+        !roles.includes('ROLE_FINANCE')
+      ) {
+        navigate('/ca-workspace');
       } else {
         navigate('/dashboard');
       }
@@ -109,6 +122,44 @@ export default function Login() {
             Sign In
           </VetanButton>
         </form>
+
+        <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1, fontWeight: 600, textTransform: 'uppercase', fontSize: '0.68rem', letterSpacing: '0.04em' }}>
+            Quick Demo Personas:
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            <Chip
+              label="Founder"
+              size="small"
+              onClick={() => handleQuickLogin('demo@vetan.in', 'Demo@1234')}
+              sx={{ backgroundColor: '#1E293B', color: '#F8FAFC', cursor: 'pointer', '&:hover': { backgroundColor: '#334155' } }}
+            />
+            <Chip
+              label="HR Manager"
+              size="small"
+              onClick={() => handleQuickLogin('hr@vetan.in', 'Welcome@1234')}
+              sx={{ backgroundColor: '#1E293B', color: '#F8FAFC', cursor: 'pointer', '&:hover': { backgroundColor: '#334155' } }}
+            />
+            <Chip
+              label="Finance"
+              size="small"
+              onClick={() => handleQuickLogin('finance@vetan.in', 'Welcome@1234')}
+              sx={{ backgroundColor: '#1E293B', color: '#F8FAFC', cursor: 'pointer', '&:hover': { backgroundColor: '#334155' } }}
+            />
+            <Chip
+              label="Chartered Accountant"
+              size="small"
+              onClick={() => handleQuickLogin('ca@vetan.in', 'Welcome@1234')}
+              sx={{ backgroundColor: '#1E293B', color: '#F8FAFC', cursor: 'pointer', '&:hover': { backgroundColor: '#334155' } }}
+            />
+            <Chip
+              label="Employee"
+              size="small"
+              onClick={() => handleQuickLogin('arun.kumar@vetan.in', 'Welcome@1234')}
+              sx={{ backgroundColor: '#1E293B', color: '#F8FAFC', cursor: 'pointer', '&:hover': { backgroundColor: '#334155' } }}
+            />
+          </Box>
+        </Box>
 
         <Box sx={{ textAlign: 'center', mt: 3 }}>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>

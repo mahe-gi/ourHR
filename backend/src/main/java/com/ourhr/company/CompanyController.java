@@ -29,7 +29,7 @@ public class CompanyController {
     private final BranchService branchService;
 
     @GetMapping("/current")
-    @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA')")
+    @PreAuthorize("hasAnyRole('FOUNDER', 'HR', 'FINANCE', 'CA', 'EMPLOYEE')")
     @Operation(summary = "Retrieve current tenant company profile",
             security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<ApiResponse<CompanyResponse>> getCurrentCompany() {

@@ -304,7 +304,7 @@ public class LeaveLedgerService {
 
         application.setStatus("APPROVED");
         application.setActionedAt(Instant.now());
-        application.setApproverId(tryResolveCurrentUserId());
+        application.setApproverId(tryResolveApproverEmployeeId());
 
         LeaveApplication updated = leaveApplicationRepository.save(application);
 
@@ -344,7 +344,7 @@ public class LeaveLedgerService {
 
         application.setStatus("REJECTED");
         application.setActionedAt(Instant.now());
-        application.setApproverId(tryResolveCurrentUserId());
+        application.setApproverId(tryResolveApproverEmployeeId());
 
         LeaveApplication updated = leaveApplicationRepository.save(application);
         return toApplicationResponse(updated, leaveType);
@@ -492,5 +492,41 @@ public class LeaveLedgerService {
 
         String email = auth.getName();
         return userRepository.findByEmail(email).map(User::getId).orElse(null);
+    }
+
+    private UUID tryResolveApproverEmployeeId() {
+        UUID tenantId = TenantContext.getTenantId();
+        if (tenantId == null) {
+            return null;
+        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getName() == null) {
+            return null;
+        }
+        String email = auth.getName();
+        return userRepository.findByEmail(email)
+                .flatMap(user -> employeeRepository.findByCompanyIdAndUserId(tenantId, user.getId()))
+                .map(Employee::getId)
+                .orElse(null);
+    }
+
+    public UUID tryResolveCurrentEmployeeId() {
+        UUID tenantId = TenantContext.getTenantId();
+        if (tenantId == null) {
+            return null;
+        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getName() != null) {
+            String email = auth.getName();
+            var userOpt = userRepository.findByEmail(email);
+            if (userOpt.isPresent()) {
+                var empOpt = employeeRepository.findByCompanyIdAndUserId(tenantId, userOpt.get().getId());
+                if (empOpt.isPresent()) {
+                    return empOpt.get().getId();
+                }
+            }
+        }
+        var anyEmp = employeeRepository.findByCompanyId(tenantId);
+        return anyEmp.isEmpty() ? null : anyEmp.get(0).getId();
     }
 }

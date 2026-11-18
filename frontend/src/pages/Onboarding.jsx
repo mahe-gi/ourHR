@@ -23,7 +23,7 @@ export default function Onboarding() {
   const [error, setError] = useState('');
 
   const [form, setForm] = useState({
-    employeeCode: 'EMP-101',
+    employeeCode: '',
     branchId: '',
     firstName: '',
     lastName: '',
@@ -45,25 +45,39 @@ export default function Onboarding() {
   });
 
   useEffect(() => {
-    const loadBranches = async () => {
+    const initData = async () => {
       try {
-        const list = await companyApi.getBranches();
-        if (list && list.length > 0) {
+        const [branchList, emps] = await Promise.all([
+          companyApi.getBranches().catch(() => []),
+          employeeApi.getEmployees().catch(() => []),
+        ]);
+        const list = Array.isArray(branchList) ? branchList : [];
+        if (list.length > 0) {
           setBranches(list);
           const defaultBranch = currentBranch?.id || list[0].id;
-          setForm((prev) => ({ ...prev, branchId: defaultBranch }));
+          setForm((prev) => ({ ...prev, branchId: prev.branchId || defaultBranch }));
         } else if (authBranches && authBranches.length > 0) {
           setBranches(authBranches);
-          setForm((prev) => ({ ...prev, branchId: authBranches[0].id }));
+          setForm((prev) => ({ ...prev, branchId: prev.branchId || authBranches[0].id }));
         }
+
+        const empList = Array.isArray(emps) ? emps : (emps?.content || []);
+        const takenCodes = new Set(empList.map((e) => e.employeeCode));
+        let nextNum = empList.length + 1;
+        let candidate = `EMP-${String(nextNum).padStart(3, '0')}`;
+        while (takenCodes.has(candidate)) {
+          nextNum++;
+          candidate = `EMP-${String(nextNum).padStart(3, '0')}`;
+        }
+        setForm((prev) => ({ ...prev, employeeCode: prev.employeeCode || candidate }));
       } catch (e) {
-        if (authBranches && authBranches.length > 0) {
-          setBranches(authBranches);
-          setForm((prev) => ({ ...prev, branchId: authBranches[0].id }));
-        }
+        setForm((prev) => ({
+          ...prev,
+          employeeCode: prev.employeeCode || `EMP-${Math.floor(200 + Math.random() * 800)}`,
+        }));
       }
     };
-    loadBranches();
+    initData();
   }, [currentBranch, authBranches]);
 
   const grossSalary =
@@ -79,9 +93,12 @@ export default function Onboarding() {
         setError('First name, last name, and official email are required.');
         return;
       }
-      if (!form.branchId && branches.length > 0) {
-        setForm((prev) => ({ ...prev, branchId: branches[0].id }));
+      const activeBranchId = form.branchId || (branches.length > 0 ? branches[0].id : null);
+      if (!activeBranchId) {
+        setError('An active branch is required before onboarding. Please create a branch under Branches.');
+        return;
       }
+      setForm((prev) => ({ ...prev, branchId: activeBranchId }));
     }
     if (activeStep === 1) {
       if (!form.pan || !form.bankAccountNumber) {
@@ -102,9 +119,9 @@ export default function Onboarding() {
     setLoading(true);
     setError('');
     try {
-      const selectedBranchId = form.branchId || branches[0]?.id;
+      const selectedBranchId = form.branchId || (branches.length > 0 ? branches[0].id : null);
       if (!selectedBranchId) {
-        throw new Error('No active branch found. Please create a branch first.');
+        throw new Error('No active branch found. Please create a branch under Branches first.');
       }
 
       // Step 1: Create Employee Record
@@ -159,7 +176,7 @@ export default function Onboarding() {
         }
       }
 
-      navigate('/employees');
+      navigate('/employees', { state: { createdEmail: form.officialEmail } });
     } catch (err) {
       setError(err.message || 'Failed to onboard employee.');
     } finally {

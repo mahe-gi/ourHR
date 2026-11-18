@@ -41,6 +41,17 @@ export default function Dashboard() {
       return;
     }
 
+    const isPureCa =
+      roles.includes('ROLE_CA') &&
+      !roles.includes('ROLE_FOUNDER') &&
+      !roles.includes('ROLE_HR') &&
+      !roles.includes('ROLE_FINANCE');
+
+    if (isPureCa) {
+      navigate('/ca-workspace', { replace: true });
+      return;
+    }
+
     const fetchDashboardData = async () => {
       try {
         const [empData, payData, leaveData] = await Promise.all([

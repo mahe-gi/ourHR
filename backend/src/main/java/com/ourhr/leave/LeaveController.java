@@ -96,10 +96,14 @@ public class LeaveController {
     public ResponseEntity<ApiResponse<List<LeaveBalanceResponse>>> getLeaveBalances(
             @PathVariable(value = "employeeId", required = false) UUID employeeId
     ) {
-        if (employeeId == null) {
+        UUID targetId = employeeId;
+        if (targetId == null) {
+            targetId = leaveLedgerService.tryResolveCurrentEmployeeId();
+        }
+        if (targetId == null) {
             return ResponseEntity.ok(ApiResponse.success(java.util.Collections.emptyList()));
         }
-        List<LeaveBalanceResponse> responses = leaveLedgerService.getLeaveBalances(employeeId);
+        List<LeaveBalanceResponse> responses = leaveLedgerService.getLeaveBalances(targetId);
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 

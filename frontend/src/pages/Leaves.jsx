@@ -3,8 +3,10 @@ import { Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Select, M
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
 
 import { leaveApi, employeeApi } from '../api';
+import { useAuth } from '../context/AuthContext';
 import PageHeader from '../components/ui/PageHeader';
 import DataTable from '../components/ui/DataTable';
 import VetanButton from '../components/ui/VetanButton';
@@ -13,6 +15,7 @@ import VetanBadge from '../components/ui/VetanBadge';
 import SandwichRuleVisualizer from '../components/domain/SandwichRuleVisualizer';
 
 export default function Leaves() {
+  const { user } = useAuth();
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [leaveTypes, setLeaveTypes] = useState([]);
@@ -20,6 +23,12 @@ export default function Leaves() {
   const [openModal, setOpenModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [submitError, setSubmitError] = useState('');
+
+  const isHrOrFounder =
+    user?.roles?.includes('ROLE_FOUNDER') ||
+    user?.roles?.includes('ROLE_HR') ||
+    user?.role === 'ROLE_FOUNDER' ||
+    user?.role === 'ROLE_HR';
 
   const [form, setForm] = useState({
     employeeId: '',
@@ -88,6 +97,24 @@ export default function Leaves() {
     }
   };
 
+  const handleApprove = async (id) => {
+    try {
+      await leaveApi.approveLeave(id);
+      fetchLeaves();
+    } catch (e) {
+      alert(e.message || 'Failed to approve leave');
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      await leaveApi.rejectLeave(id, 'Rejected by HR Manager');
+      fetchLeaves();
+    } catch (e) {
+      alert(e.message || 'Failed to reject leave');
+    }
+  };
+
   const columns = [
     {
       field: 'employeeName',
@@ -117,7 +144,7 @@ export default function Leaves() {
       headerName: 'Days Debited',
       renderCell: ({ row }) => (
         <Typography variant="body2" sx={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-          {row.totalDays || 4} Days
+          {row.totalDays || 1} Days
         </Typography>
       ),
     },
@@ -126,6 +153,46 @@ export default function Leaves() {
       headerName: 'Status',
       renderCell: ({ row }) => <VetanBadge status={row.status || 'APPROVED'} />,
     },
+    ...(isHrOrFounder
+      ? [
+          {
+            field: 'actions',
+            headerName: 'Review',
+            width: 120,
+            renderCell: ({ row }) => {
+              if (row.status === 'PENDING') {
+                return (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Tooltip title="Approve Leave">
+                      <IconButton aria-label="Approve leave"
+                        size="small"
+                        onClick={() => handleApprove(row.id)}
+                        sx={{ color: '#10B981', '&:hover': { backgroundColor: 'rgba(16, 185, 129, 0.1)' } }}
+                      >
+                        <CheckOutlinedIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Reject Leave">
+                      <IconButton aria-label="Reject leave"
+                        size="small"
+                        onClick={() => handleReject(row.id)}
+                        sx={{ color: '#EF4444', '&:hover': { backgroundColor: 'rgba(239, 68, 68, 0.1)' } }}
+                      >
+                        <CloseOutlinedIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                );
+              }
+              return (
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Finalized
+                </Typography>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   return (
